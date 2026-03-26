@@ -12,11 +12,13 @@ import { renderCaregiver } from './pages/caregiver.js';
 import { renderSymptoms } from './pages/symptoms.js';
 import { renderMedications } from './pages/medications.js';
 import { renderReport } from './pages/report.js';
+import { renderClearScript } from './pages/clearscript.js';
 
 // ---- Router ----
 const pages = {
   home: renderHome,
   scanner: renderScanner,
+  clearscript: renderClearScript,
   timeline: renderTimeline,
   mood: renderMood,
   'risk-analysis': renderRiskAnalysis,
@@ -49,7 +51,7 @@ function navigate(page) {
 }
 
 function updateNav(page) {
-  const navMap = { home: 'home', scanner: 'scanner', timeline: 'timeline', mood: 'mood', 'risk-analysis': 'scanner', alert: 'scanner', caregiver: 'home', symptoms: 'home', medications: 'home', report: 'home' };
+  const navMap = { home: 'home', scanner: 'scanner', clearscript: 'scanner', timeline: 'timeline', mood: 'mood', 'risk-analysis': 'scanner', alert: 'scanner', caregiver: 'home', symptoms: 'home', medications: 'home', report: 'home' };
   const activeTab = navMap[page] || page;
   document.querySelectorAll('.nav-item').forEach(item => {
     const itemPage = item.dataset.page;
@@ -71,11 +73,16 @@ function bindPageEvents(page) {
     main.querySelector('#tool-report')?.addEventListener('click', () => navigate('report'));
   }
 
-  // Scanner: capture -> risk analysis
+  // Scanner: capture -> clearscript
   if (page === 'scanner') {
     main.querySelector('#scanner-capture')?.addEventListener('click', () => {
-      navigate('risk-analysis');
+      navigate('clearscript');
     });
+  }
+
+  // ClearScript: confirm -> risk analysis
+  if (page === 'clearscript') {
+    main.querySelector('#clearscript-confirm')?.addEventListener('click', () => navigate('risk-analysis'));
   }
 
   // Risk Analysis: back to alert from status
