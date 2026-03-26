@@ -43,6 +43,29 @@ Patients today consult multiple doctors independently, receiving new medications
 
 ---
 
+## 🎯 Objective
+
+Build an **AI-powered safety layer** that comprehensively connects physical medications with mental health monitoring to:
+- Detect dangerous drug interactions instantly.
+- Identify prescription cascades before they worsen.
+- Correlate specific medications with precise mood changes.
+- Provide a truly unified view horizontally across all of a patient's active doctors.
+
+**➡️ Goal:** Prevent hidden risks *before* they become critical cases.
+
+---
+
+## 💡 The Solution
+
+**Sanjeev AI** is the first platform that unites a patient's entire medical footprint under one intelligent roof:
+
+1. **AI-Powered Prescription Scanner:** Rapidly scans messy prescriptions via ClearScript OCR for instantaneous drug interaction verification.
+2. **Multi-Doctor Unified View:** Intelligently merges fragmented prescriptions from all independent doctors into one prioritized list.
+3. **Cascade Early Warning:** AI uniquely flags if a new medicine is incorrectly prescribed to simply treat a previous drug's side effect.
+4. **Mood & Drug Validation Alerts:** Accurately correlates symptoms of depression or anxiety directly to the start dates of specific chemical interactions.
+
+---
+
 ## 🏗️ Architecture
 
 ### System Flow
