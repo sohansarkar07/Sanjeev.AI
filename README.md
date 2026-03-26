@@ -103,6 +103,20 @@ graph TD
 
 ---
 
+## 👥 Target Users
+
+| User | Main Need | Key Feature |
+| --- | --- | --- |
+| **Patient** | Safety | Interaction checker + ClearScript |
+| **Doctor** | Information | Alerts + Reports |
+| **Caregiver** | Monitoring | Dashboard + SOS |
+| **Pharmacist**| Clarity | ClearScript |
+| **Hospital / Clinic** | Management | Full platform (Integrates with existing systems, monitors multiple patients, reduces adverse drug event rates) |
+
+> **💡 Pitch Strategy:** Lead with the **PATIENT** — specifically elderly patients. *Nobody in their life — not their doctors, not their family — has a 100% unified view of their daily biochemical intake.*
+
+---
+
 ## 💡 Impact and Benefit
 
 Transforming patient safety, healthcare decisions, and lives:
