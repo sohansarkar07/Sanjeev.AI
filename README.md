@@ -93,7 +93,10 @@ graph TD
     Mood --> Alert
 ```
 
-- 📸 **AI-Powered Prescription Scanner:** Scan prescriptions and get instant drug interaction checks via OCR.
+- 📸 **AI-Powered Prescription Scanner (ClearScript Engine):** Convert messy doctor handwriting into clean, readable digital prescriptions. Features a **Three-Layer OCR Confidence System**:
+  - `>90% Match`: Auto-accepted processing
+  - `60% - 90% Match`: Prompts user for manual confirmation/edit
+  - `<60% Match`: Forces manual fallback input
 - 👨‍⚕️ **Multi-Doctor Unified View:** Merge prescriptions from *all* your doctors into one comprehensive list.
 - ⚠️ **Cascade Early Warning:** Detect automatically if a newly prescribed medicine is actually just treating an old drug's side effect.
 - 😊 **Mood & Drug Interaction Alerts:** Detect depression/anxiety accurately linked to the start dates of specific medications.
