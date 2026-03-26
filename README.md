@@ -117,6 +117,25 @@ graph TD
 
 ---
 
+## 🧠 All Uses of AI within Sanjeev AI
+
+1. **OCR & Handwriting Recognition (ClearScript):** Utilizes computer vision and NLP models to decipher illegible doctor handwriting and extract exact medicine names and dosages with a **Three-Layer Confidence System**.
+2. **Biochemical Drug Interaction Engine:** AI actively parses complex pharmacological databases to evaluate thousands of potential chemical clashes across multi-doctor prescriptions in real-time.
+3. **Prescription Cascade Predictor:** Machine learning algorithms detect patterns where a new prescription is likely a "band-aid" for a side effect caused by an older drug, halting the dangerous cascade cycle.
+4. **Mood-to-Medication Correlation (NLP):** Processes user-submitted daily mood logs (via natural language text or voice) and connects emotional sentiment shifts against the active medication timeline.
+5. **Plain Language Medical Translation:** Large Language Models (LLMs) translate dense, jargon-heavy pharmacological warnings into simple, plain language so any patient can immediately comprehend their actual risk.
+
+---
+
+## 🌟 Innovation Points
+
+*   **The Physical-to-Mental Health Bridge:** We are the first platform to systematically bridge the gap between physical medication and mental health autonomously. Patients don't need to guess why their mood shifted; the AI cross-references their drug timeline for them.
+*   **Multi-Doctor Unification:** Instead of disrupting the healthcare system, we act as the missing link, combining disjointed, siloed medical treatments from entirely different doctors into one holistic safety dashboard.
+*   **Preventative, Not Reactive:** Existing apps simply remind you *when* to take a pill. Sanjeev AI tells you *whether you should take it at all* when mixed with your other treatments. We prevent the adverse drug event *before* the pill is swallowed.
+*   **Three-Layer Compliance Pipeline:** A novel approach to medical scanning that treats AI honestly: auto-accepting high certainty, triggering human-in-the-loop validation for mid certainty, and forcing manual fallback on low certainty to guarantee 100% safety.
+
+---
+
 ## ⚖️ Existing Solutions vs. Sanjeev AI
 
 ### 🏆 5 Things NOBODY Has Built Before
