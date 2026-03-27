@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
   <img src="https://img.shields.io/badge/JAVASCRIPT-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
   <img src="https://img.shields.io/badge/VITE-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/D3.js-F9A03C?style=for-the-badge&logo=d3.js&logoColor=white" alt="D3.js" />
 
   <br />
   <br />
@@ -110,10 +111,12 @@ graph TD
     Check -->|Analyzes Medications| Int[Drug Interaction Checker]
     Check -->|Analyzes Symptoms| Cas[Cascade Early Warning]
     Check -->|Analyzes Mental State| Mood[Mood & Drug Correlation]
+    Check -->|Visualizes Risk Network| Map[Safety Map™]
 
     Int --> Alert[Doctor/Caregiver Real-time Alert]
     Cas --> Alert
     Mood --> Alert
+    Map --> Alert
 ```
 
 - 📸 **AI-Powered Prescription Scanner (ClearScript Engine):** Convert messy doctor handwriting into clean, readable digital prescriptions. Features a **Three-Layer OCR Confidence System**:
@@ -123,6 +126,15 @@ graph TD
 - 👨‍⚕️ **Multi-Doctor Unified View:** Merge prescriptions from *all* your doctors into one comprehensive list.
 - ⚠️ **Cascade Early Warning:** Detect automatically if a newly prescribed medicine is actually just treating an old drug's side effect.
 - 😊 **Mood & Drug Interaction Alerts:** Detect depression/anxiety accurately linked to the start dates of specific medications.
+- 🗺️ **Drug Interaction Checker & Safety Map™:** A comprehensive drug interaction analysis tool featuring:
+  - **Patient Context Form** — Age, allergies, kidney/liver condition toggles
+  - **Medication List** — Per-drug risk badges (Safe/Caution/Danger), doctor specialty
+  - **Overall Risk Score** — Large visual 0-10 score with gradient bar (Low → Critical)
+  - **Safety Map™** — Interactive D3.js force-directed network graph showing drug relationships with draggable nodes, zoom, and click-to-inspect popups
+  - **Cascade Warning Box** — Plain-language explanation with CYP enzyme badges and evidence grades
+  - **"Make Simpler" Button** — Converts medical jargon to patient-friendly language
+  - **Action Suite** — Copy Report, Export PDF, Alert Doctor buttons
+  - **Fully mobile-responsive** — Adapts layout for all screen sizes
 
 ---
 
@@ -239,6 +251,7 @@ Transforming patient safety, healthcare decisions, and lives:
 | Layer | Technologies |
 | --- | --- |
 | **Frontend Prototype** | HTML5, CSS3, Vanilla JS, Vite |
+| **Data Visualization** | D3.js (Force-directed Safety Map™) |
 | **Proposed Frontend** | React, Next.js, Tailwind CSS |
 | **Backend** | Python, FastAPI, Node.js |
 | **AI / Machine Learning**| TensorFlow, PyTorch, Scikit-learn |
@@ -280,7 +293,9 @@ npm run dev
 ```
 
 ### 4. Open Application
-Navigate to `http://localhost:3000` to view the comprehensive UI/UX consisting of the Unified Dashboard, Prescription Scanner, Health Timeline, Risk Analysis, Mood Tracker, and Caregiver Hub.
+Navigate to `http://localhost:3000` to view the comprehensive UI/UX consisting of the Unified Dashboard, Prescription Scanner, Health Timeline, Risk Analysis, Mood Tracker, Caregiver Hub, and the **Drug Interaction Checker with Safety Map™**.
+
+> **Tip:** Click the **"Interaction Map"** card on the Home dashboard to access the Drug Interaction Checker and the interactive D3.js Safety Map™ network visualization.
 
 ---
 

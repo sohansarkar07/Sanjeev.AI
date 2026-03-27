@@ -98,6 +98,10 @@ export function renderHome(navigate) {
           <span class="material-symbols-outlined" style="color:var(--primary); font-size:2rem; margin-bottom:var(--space-2);">insert_chart</span>
           <h5 style="font-weight:700; color:var(--primary); font-size:0.875rem;">Weekly Report</h5>
         </div>
+        <div class="card" id="tool-interaction" style="cursor:pointer; padding:var(--space-4); text-align:center;">
+          <span class="material-symbols-outlined" style="color:var(--primary); font-size:2rem; margin-bottom:var(--space-2);">hub</span>
+          <h5 style="font-weight:700; color:var(--primary); font-size:0.875rem;">Interaction Map</h5>
+        </div>
       </div>
     </section>
 

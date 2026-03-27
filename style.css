@@ -1337,3 +1337,96 @@ body::before {
   .mood-emoji-circle { width: 3.5rem; height: 3.5rem; }
   .mood-emoji-circle .material-symbols-outlined { font-size: 2rem; }
 }
+
+/* ============================
+   DRUG INTERACTION CHECKER
+   ============================ */
+
+/* Drug interaction page — desktop two-column layout */
+@media (min-width: 48rem) {
+  #drug-interaction-page > div {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-8);
+  }
+  /* Safety Map spans full width */
+  #drug-interaction-page > div > section:nth-child(5),
+  #drug-interaction-page > div > section:nth-child(6) {
+    grid-column: span 2;
+  }
+}
+
+/* Drug interaction page — mobile overrides */
+@media (max-width: 47.99rem) {
+  #drug-interaction-page .page-title {
+    font-size: 1.75rem;
+  }
+
+  /* Patient context form: stack toggles vertically */
+  #drug-interaction-page .card-white > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+  #drug-interaction-page .card-white > div:last-child > div[style*="grid-column:span 2"] {
+    grid-column: span 1 !important;
+  }
+
+  /* Cascade warning: stack vertically */
+  #drug-interaction-page section[style*="FFF8E1"] > div {
+    flex-direction: column;
+  }
+  #drug-interaction-page section[style*="FFF8E1"] h4 {
+    font-size: 0.95rem;
+  }
+  #drug-interaction-page section[style*="FFF8E1"] > div > div:last-child > div:nth-child(1) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  /* Safety Map: reduce height on mobile */
+  #safety-map-container {
+    height: 300px !important;
+  }
+
+  /* Safety Map header: stack */
+  #drug-interaction-page section div[style*="0D1117"] > div:first-child {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Legend: wrap on mobile */
+  #drug-interaction-page section div[style*="0D1117"] > div:last-child {
+    flex-wrap: wrap;
+    gap: 10px !important;
+  }
+
+  /* Action buttons: single column on small screens */
+  #drug-interaction-page section[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  #drug-interaction-page section[style*="grid-template-columns:1fr 1fr"] button[style*="grid-column:span 2"] {
+    grid-column: span 1 !important;
+  }
+
+  /* Risk score: reduce large number */
+  #drug-interaction-page .card-white div[style*="font-size:4rem"] {
+    font-size: 3rem !important;
+  }
+
+  /* Node popup: constrain width on mobile */
+  .node-popup {
+    width: 220px !important;
+    padding: 16px !important;
+  }
+}
+
+/* Smooth transitions for drug items */
+.drug-item:hover {
+  border-color: var(--primary-container) !important;
+  box-shadow: var(--shadow-ambient);
+}
+
+.drug-item .drug-remove-btn:hover {
+  opacity: 1 !important;
+  color: var(--error) !important;
+}

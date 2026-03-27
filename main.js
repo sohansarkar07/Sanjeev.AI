@@ -13,6 +13,7 @@ import { renderSymptoms } from './pages/symptoms.js';
 import { renderMedications } from './pages/medications.js';
 import { renderReport } from './pages/report.js';
 import { renderClearScript } from './pages/clearscript.js';
+import { renderDrugInteraction } from './pages/drug-interaction.js';
 
 // ---- Router ----
 const pages = {
@@ -27,6 +28,7 @@ const pages = {
   symptoms: renderSymptoms,
   medications: renderMedications,
   report: renderReport,
+  'drug-interaction': renderDrugInteraction,
 };
 
 let currentPage = 'home';
@@ -51,7 +53,7 @@ function navigate(page) {
 }
 
 function updateNav(page) {
-  const navMap = { home: 'home', scanner: 'scanner', clearscript: 'scanner', timeline: 'timeline', mood: 'mood', 'risk-analysis': 'scanner', alert: 'scanner', caregiver: 'home', symptoms: 'home', medications: 'home', report: 'home' };
+  const navMap = { home: 'home', scanner: 'scanner', clearscript: 'scanner', timeline: 'timeline', mood: 'mood', 'risk-analysis': 'scanner', alert: 'scanner', caregiver: 'home', symptoms: 'home', medications: 'home', report: 'home', 'drug-interaction': 'home' };
   const activeTab = navMap[page] || page;
   document.querySelectorAll('.nav-item').forEach(item => {
     const itemPage = item.dataset.page;
@@ -71,6 +73,7 @@ function bindPageEvents(page) {
     main.querySelector('#tool-symptoms')?.addEventListener('click', () => navigate('symptoms'));
     main.querySelector('#tool-meds')?.addEventListener('click', () => navigate('medications'));
     main.querySelector('#tool-report')?.addEventListener('click', () => navigate('report'));
+    main.querySelector('#tool-interaction')?.addEventListener('click', () => navigate('drug-interaction'));
   }
 
   // Scanner: capture -> clearscript
@@ -98,6 +101,16 @@ function bindPageEvents(page) {
         emojiBtns.forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
       });
+    });
+  }
+
+  // Drug Interaction page events
+  if (page === 'drug-interaction') {
+    // Import and initialize D3 safety map
+    import('https://cdn.jsdelivr.net/npm/d3@7/+esm').then(d3 => {
+      if (typeof window.__initSafetyMap === 'function') {
+        window.__initSafetyMap(d3);
+      }
     });
   }
 }
