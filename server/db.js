@@ -47,6 +47,19 @@ const db = new sqlite3.Database(DBSOURCE, (err) => {
       if (err) console.error('Error creating prescriptions table', err);
     });
 
+    // Create Emergency Contacts Table
+    db.run(`CREATE TABLE IF NOT EXISTS emergency_contacts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER,
+      name TEXT,
+      relation TEXT,
+      phone TEXT,
+      isSOS BOOLEAN DEFAULT 0,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    )`, (err) => {
+      if (err) console.error('Error creating emergency_contacts table', err);
+    });
+
   }
 });
 

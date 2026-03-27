@@ -83,6 +83,29 @@ app.get('/api/users/:id/profile', (req, res) => {
   });
 });
 
+// ----------------------------------------------------
+// CONTACTS API
+// ----------------------------------------------------
+app.get('/api/users/:id/contacts', (req, res) => {
+  const userId = req.params.id;
+  db.all("SELECT * FROM emergency_contacts WHERE userId = ?", [userId], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows || []);
+  });
+});
+
+app.post('/api/users/:id/contacts', (req, res) => {
+  const userId = req.params.id;
+  const { name, relation, phone, isSOS } = req.body;
+  if (!name || !phone) return res.status(400).json({ error: 'Name and phone required' });
+  
+  const sql = "INSERT INTO emergency_contacts (userId, name, relation, phone, isSOS) VALUES (?,?,?,?,?)";
+  db.run(sql, [userId, name, relation, phone, isSOS ? 1 : 0], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ id: this.lastID, userId, name, relation, phone, isSOS: isSOS ? 1 : 0 });
+  });
+});
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

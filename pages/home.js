@@ -26,6 +26,10 @@ function renderPatientMode(navigate) {
       <div class="home-hero-text">
         <h2 class="page-title">${t('greeting', { name: window.__currentUserName || 'Guest' })}</h2>
         <p class="page-subtitle">${t('greetingSub')}</p>
+        <button class="sos-pill-btn" id="sos-btn" style="margin-top:var(--space-4); display:flex; align-items:center; gap:var(--space-2); background:var(--error); color:white; border:none; padding:var(--space-2) var(--space-4); border-radius:var(--radius-full); font-weight:900; box-shadow:0 0 15px rgba(186,26,26,0.5); width:fit-content;">
+           <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">emergency_share</span>
+           EMERGENCY SOS
+        </button>
       </div>
       <div class="safety-gauge">
         <div class="deco">

@@ -48,5 +48,34 @@ export const api = {
       console.error('API Error [Profile]:', err);
       throw err;
     }
+  },
+
+  // Emergency & Doctor Contacts
+  getContacts: async (userId) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/users/${userId}/contacts`);
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [getContacts]:', err);
+      throw err;
+    }
+  },
+
+  addContact: async (userId, contactData) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/users/${userId}/contacts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(contactData)
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [addContact]:', err);
+      throw err;
+    }
   }
 };

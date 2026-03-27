@@ -58,6 +58,17 @@ function navigate(page) {
       main.appendChild(content);
     }
     main.querySelector('.page-enter') || main.firstElementChild?.classList.add('page-enter');
+    
+    // Auto-fetch data for profile if logged in
+    if (page === 'profile' && window.__isLoggedIn) {
+      api.getContacts(window.__currentUserId).then(contacts => {
+        window.__currentContacts = contacts;
+        const renderer = pages['profile'];
+        main.innerHTML = renderer(navigate);
+        bindPageEvents('profile');
+      });
+    }
+
     bindPageEvents(page);
   }
   
@@ -154,6 +165,10 @@ function bindPageEvents(page) {
     main.querySelector('#tool-meds')?.addEventListener('click', () => navigate('medications'));
     main.querySelector('#tool-report')?.addEventListener('click', () => navigate('report'));
     main.querySelector('#tool-interaction')?.addEventListener('click', () => navigate('drug-interaction'));
+    main.querySelector('#sos-btn')?.addEventListener('click', () => {
+      if (window.__isLoggedIn) navigate('profile');
+      else alert('Please login to use Emergency SOS features');
+    });
   }
 
   // Scanner
@@ -252,10 +267,42 @@ function bindPageEvents(page) {
       }
     }
 
+    // Contacts Logic
+    const addBtn = main.querySelector('#add-contact-btn');
+    const modal = main.querySelector('#contact-modal');
+    const closeBtn = main.querySelector('#close-modal');
+    const contactForm = main.querySelector('#contact-form');
+
+    if (addBtn && modal) {
+      addBtn.addEventListener('click', () => modal.style.display = 'flex');
+      closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    }
+
+    if (contactForm) {
+      contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const contactData = {
+          name: main.querySelector('#contact-name').value,
+          relation: main.querySelector('#contact-relation').value,
+          phone: main.querySelector('#contact-phone').value,
+          isSOS: main.querySelector('#contact-sos').checked
+        };
+        
+        try {
+          await api.addContact(window.__currentUserId, contactData);
+          modal.style.display = 'none';
+          navigate('profile'); // Re-render to show new contact
+        } catch (err) {
+          alert('Error adding contact: ' + err.message);
+        }
+      });
+    }
+
     // Logout
     main.querySelector('#profile-logout-btn')?.addEventListener('click', () => {
       window.__isLoggedIn = false;
       window.__currentUserRole = 'patient';
+      window.__currentContacts = [];
       navigate('profile'); // Return to auth
     });
   }

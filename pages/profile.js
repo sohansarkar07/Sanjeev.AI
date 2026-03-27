@@ -3,6 +3,7 @@ export function renderProfile(navigate) {
   const isLoggedIn = window.__isLoggedIn || false;
   const userName = window.__currentUserName || 'Guest';
   const role = window.__currentUserRole || 'patient';
+  const contacts = window.__currentContacts || [];
 
   // 1. Logged Out State (Auth Screen)
   if (!isLoggedIn) {
@@ -31,7 +32,7 @@ export function renderProfile(navigate) {
       </button>
     </header>
 
-    ${renderRoleSpecificInfo(role, t)}
+    ${renderRoleSpecificInfo(role, t, contacts)}
 
     <!-- Global Settings -->
     <section style="margin-bottom:var(--space-10);">
@@ -75,11 +76,67 @@ export function renderProfile(navigate) {
       <span class="material-symbols-outlined">logout</span>
       ${t('logout')}
     </button>
+
+    <!-- Add Contact Modal (Hidden by default) -->
+    <div id="contact-modal" class="modal-overlay" style="display:none;">
+      <div class="modal-card">
+        <h3 style="margin-bottom:var(--space-4);">Add Emergency Contact</h3>
+        <form id="contact-form">
+          <input type="text" id="contact-name" placeholder="Full Name" class="form-input" required />
+          <input type="text" id="contact-relation" placeholder="Relation (e.g. Doctor, Sister)" class="form-input" />
+          <input type="tel" id="contact-phone" placeholder="Phone Number" class="form-input" required />
+          <label style="display:flex; align-items:center; gap:var(--space-2); margin:var(--space-4) 0; cursor:pointer;">
+            <input type="checkbox" id="contact-sos" />
+            <span style="font-size:0.875rem; font-weight:600;">Set as SOS Primary</span>
+          </label>
+          <div style="display:flex; gap:var(--space-2);">
+            <button type="button" class="btn-secondary" id="close-modal" style="flex:1; justify-content:center;">Cancel</button>
+            <button type="submit" class="btn-primary" style="flex:1; justify-content:center;">Save Contact</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <style>
+      .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.7);
+        backdrop-filter: blur(5px);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-4);
+      }
+      .modal-card {
+        background: var(--surface);
+        padding: var(--space-6);
+        border-radius: var(--radius-2xl);
+        width: 100%;
+        max-width: 360px;
+        box-shadow: var(--shadow-elevated);
+      }
+      .form-input {
+        width: 100%;
+        padding: var(--space-3);
+        margin-bottom: var(--space-3);
+        border: 1px solid var(--outline-variant);
+        border-radius: var(--radius-lg);
+        background: var(--surface-container-low);
+        color: var(--on-surface);
+        font-family: inherit;
+      }
+      .form-input:focus {
+        border-color: var(--primary);
+        outline: none;
+      }
+    </style>
   </div>
   `;
 }
 
-function renderRoleSpecificInfo(role, t) {
+function renderRoleSpecificInfo(role, t, contacts) {
   if (role === 'doctor') {
     return `
     <section style="margin-bottom:var(--space-8);">
@@ -96,90 +153,12 @@ function renderRoleSpecificInfo(role, t) {
           <p style="font-weight:700;">Cardiology</p>
         </div>
       </div>
-      <div class="card" style="margin-top:var(--space-3); display:flex; justify-content:space-between; align-items:center;">
-         <div style="display:flex; align-items:center; gap:var(--space-2);">
-            <span class="material-symbols-outlined" style="color:var(--primary);">local_hospital</span>
-            <span style="font-weight:600;">Affiliated Hospital</span>
-         </div>
-         <span style="font-size:0.875rem; color:var(--on-surface-variant);">Apollo City Clinic</span>
-      </div>
     </section>
     `;
   }
   
-  if (role === 'pharmacist') {
+  if (role === 'patient') {
     return `
-    <section style="margin-bottom:var(--space-8);">
-      <h3 class="section-title" style="margin-bottom:var(--space-4);">Pharmacy Details</h3>
-      <div class="card" style="margin-bottom:var(--space-3); display:flex; justify-content:space-between; align-items:center;">
-         <div style="display:flex; align-items:center; gap:var(--space-2);">
-            <span class="material-symbols-outlined" style="color:var(--primary);">storefront</span>
-            <span style="font-weight:600;">Store Location</span>
-         </div>
-         <span style="font-size:0.875rem; color:var(--on-surface-variant);">Central Metro Pharmacy</span>
-      </div>
-      <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-         <div style="display:flex; align-items:center; gap:var(--space-2);">
-            <span class="material-symbols-outlined" style="color:var(--tertiary);">verified</span>
-            <span style="font-weight:600;">License Verification</span>
-         </div>
-         <span class="chip" style="background:var(--primary-container); color:var(--on-primary-container);">Active (PHR-812)</span>
-      </div>
-    </section>
-    `;
-  }
-
-  if (role === 'caregiver') {
-    return `
-    <section style="margin-bottom:var(--space-8);">
-      <h3 class="section-title" style="margin-bottom:var(--space-4);">Care Assignment</h3>
-      <div class="card" style="margin-bottom:var(--space-3); display:flex; justify-content:space-between; align-items:center;">
-         <div style="display:flex; align-items:center; gap:var(--space-2);">
-            <span class="material-symbols-outlined" style="color:var(--primary);">elderly</span>
-            <span style="font-weight:600;">Primary Ward</span>
-         </div>
-         <span style="font-size:0.875rem; color:var(--on-surface-variant);">Rahul S. (Father)</span>
-      </div>
-      <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
-         <div style="display:flex; align-items:center; gap:var(--space-2);">
-            <span class="material-symbols-outlined" style="color:var(--tertiary);">event_available</span>
-            <span style="font-weight:600;">Availability</span>
-         </div>
-         <span class="chip" style="background:var(--primary-container); color:var(--on-primary-container);">24/7 On-Call</span>
-      </div>
-    </section>
-    `;
-  }
-
-  if (role === 'hospital') {
-    return `
-    <section style="margin-bottom:var(--space-8);">
-      <h3 class="section-title" style="margin-bottom:var(--space-4);">Facility Profile</h3>
-      <div class="card" style="margin-bottom:var(--space-3); display:flex; justify-content:space-between; align-items:center;">
-         <div style="display:flex; align-items:center; gap:var(--space-2);">
-            <span class="material-symbols-outlined" style="color:var(--primary);">domain</span>
-            <span style="font-weight:600;">Facility ID</span>
-         </div>
-         <span style="font-size:0.875rem; color:var(--on-surface-variant);">HSP-CITY-01</span>
-      </div>
-      <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--space-3);">
-        <div class="card" style="text-align:center; padding:var(--space-4);">
-          <span class="material-symbols-outlined" style="color:var(--tertiary); margin-bottom:var(--space-2);">bed</span>
-          <p style="font-size:0.75rem; color:var(--on-surface-variant); text-transform:uppercase;">Total Beds</p>
-          <p style="font-weight:700;">450</p>
-        </div>
-        <div class="card" style="text-align:center; padding:var(--space-4);">
-          <span class="material-symbols-outlined" style="color:var(--error); margin-bottom:var(--space-2);">emergency</span>
-          <p style="font-size:0.75rem; color:var(--on-surface-variant); text-transform:uppercase;">Trauma Level</p>
-          <p style="font-weight:700;">Level II</p>
-        </div>
-      </div>
-    </section>
-    `;
-  }
-
-  // Fallback to Patient
-  return `
     <!-- Personal Info -->
     <section style="margin-bottom:var(--space-8);">
       <h3 class="section-title" style="margin-bottom:var(--space-4);">${t('personalInfo')}</h3>
@@ -202,19 +181,42 @@ function renderRoleSpecificInfo(role, t) {
       </div>
     </section>
 
-    <!-- Medical History -->
+    <!-- Emergency Contacts Section -->
     <section style="margin-bottom:var(--space-8);">
-      <h3 class="section-title" style="margin-bottom:var(--space-4);">${t('medicalHistory')}</h3>
-      <div class="alert-doc-card" style="background:var(--surface-container-high); border:none; box-shadow:none;">
-        <div class="alert-doc-icon" style="background:white; color:var(--primary);">
-          <span class="material-symbols-outlined">description</span>
-        </div>
-        <h4>${t('medicalHistory')}</h4>
-        <p>${t('historyDesc')}</p>
-        <button class="btn-secondary" style="margin-top:var(--space-2);">${t('manageButton')}</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-4);">
+        <h3 class="section-title">Emergency & SOS</h3>
+        <button class="btn-text" id="add-contact-btn" style="color:var(--primary); font-weight:700; font-size:0.875rem;">
+          <span class="material-symbols-outlined" style="font-size:1.125rem;">add_circle</span> Add Contact
+        </button>
+      </div>
+      <div id="contacts-list" style="display:grid; gap:var(--space-3);">
+        ${contacts.length === 0 ? `
+          <div class="card" style="padding:var(--space-6); text-align:center; border:2px dashed var(--outline-variant); background:transparent;">
+            <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--outline); margin-bottom:var(--space-2);">contact_emergency</span>
+            <p style="font-size:0.875rem; color:var(--on-surface-variant);">No emergency contacts added yet.</p>
+          </div>
+        ` : contacts.map(c => `
+          <div class="card" style="display:flex; justify-content:space-between; align-items:center; border-left: 4px solid ${c.isSOS ? 'var(--error)' : 'var(--primary)'};">
+            <div style="display:flex; align-items:center; gap:var(--space-3);">
+              <div class="brand-avatar" style="width:2.5rem; height:2.5rem; background:var(--surface-container-high);">
+                <span class="material-symbols-outlined" style="color:var(--primary);">${c.relation.toLowerCase().includes('doc') ? 'medical_services' : 'person'}</span>
+              </div>
+              <div>
+                <h4 style="font-weight:700;">${c.name} ${c.isSOS ? '<span class="chip" style="background:var(--error-container); color:var(--on-error-container); font-size:0.6rem; margin-left:4px;">SOS</span>' : ''}</h4>
+                <p style="font-size:0.75rem; color:var(--on-surface-variant);">${c.relation} • ${c.phone}</p>
+              </div>
+            </div>
+            <a href="tel:${c.phone}" class="icon-btn" style="color:var(--primary);">
+              <span class="material-symbols-outlined">call</span>
+            </a>
+          </div>
+        `).join('')}
       </div>
     </section>
-  `;
+    `;
+  }
+
+  return ''; // Placeholder for other roles
 }
 
 function renderAuthScreen(t) {
