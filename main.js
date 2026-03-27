@@ -72,17 +72,62 @@ function navigate(page) {
     if (bottomNav) bottomNav.style.display = 'flex';
   }
 
-  updateNav(page);
+  updateBottomNavHTML(page);
   updateStaticText();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function updateNav(page) {
-  const navMap = { home: 'home', scanner: 'scanner', clearscript: 'scanner', timeline: 'timeline', mood: 'mood', 'risk-analysis': 'scanner', alert: 'scanner', caregiver: 'home', symptoms: 'home', medications: 'home', report: 'home', 'drug-interaction': 'home', profile: 'home' };
-  const activeTab = navMap[page] || page;
+function updateBottomNavHTML(page) {
+  const bottomNav = document.getElementById('bottom-nav');
+  if (!bottomNav) return;
+  const role = window.__currentUserRole || 'patient';
+  
+  const navItems = {
+    patient: [
+      { id: 'home', icon: 'home', label: t('navHome') },
+      { id: 'scanner', icon: 'document_scanner', label: t('navScanner') },
+      { id: 'timeline', icon: 'timeline', label: t('navTimeline') },
+      { id: 'mood', icon: 'wb_sunny', label: t('navMood') }
+    ],
+    doctor: [
+       { id: 'home', icon: 'medical_services', label: 'Roster' },
+       { id: 'alert', icon: 'notifications_active', label: 'Alerts' },
+       { id: 'report', icon: 'insert_chart', label: 'Reports' }
+    ],
+    caregiver: [
+       { id: 'caregiver', icon: 'family_home', label: 'Hub' },
+       { id: 'alert', icon: 'notifications_active', label: 'Alerts' },
+       { id: 'medications', icon: 'pill', label: 'Meds' }
+    ],
+    pharmacist: [
+       { id: 'home', icon: 'local_pharmacy', label: 'Queue' },
+       { id: 'scanner', icon: 'document_scanner', label: 'Scan Rx' }
+    ],
+    hospital: [
+       { id: 'home', icon: 'dashboard', label: 'Overview' },
+       { id: 'report', icon: 'analytics', label: 'Analytics' }
+    ]
+  };
+
+  const items = navItems[role] || navItems['patient'];
+  
+  // Create mapping array to correctly highlight active states based on current route
+  const activeTabMap = { home: 'home', scanner: 'scanner', clearscript: 'scanner', timeline: 'timeline', mood: 'mood', 'risk-analysis': 'scanner', alert: 'alert', caregiver: 'caregiver', symptoms: 'home', medications: 'medications', report: 'report', 'drug-interaction': 'home', profile: 'home' };
+  const activeTab = activeTabMap[page] || page;
+
+  bottomNav.innerHTML = items.map(item => `
+    <a href="#" class="nav-item ${item.id === activeTab ? 'active' : ''}" data-page="${item.id}">
+      <span class="material-symbols-outlined nav-icon">${item.icon}</span>
+      <span class="nav-label">${item.label}</span>
+    </a>
+  `).join('');
+
+  // Re-bind listeners for newly generated DOM elements
   document.querySelectorAll('.nav-item').forEach(item => {
-    const itemPage = item.dataset.page;
-    item.classList.toggle('active', itemPage === activeTab);
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      navigate(item.dataset.page);
+    });
   });
 }
 
@@ -92,14 +137,7 @@ function updateStaticText() {
   const brand = document.querySelector('.brand-name');
   if (brand) brand.textContent = t('brandName');
 
-  // Bottom nav labels
-  document.querySelectorAll('.nav-item').forEach(item => {
-    const label = item.querySelector('.nav-label');
-    if (!label) return;
-    const page = item.dataset.page;
-    const map = { home: 'navHome', scanner: 'navScanner', timeline: 'navTimeline', mood: 'navMood' };
-    if (map[page]) label.textContent = t(map[page]);
-  });
+  // Bottom nav is now correctly translated dynamically during draw.
 }
 
 function bindPageEvents(page) {
@@ -212,13 +250,10 @@ if (langSelect) {
   });
 }
 
-// ---- Bottom Nav Binding ----
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', (e) => {
-    e.preventDefault();
-    navigate(item.dataset.page);
-  });
-});
+// ---- Bottom Nav Binding (Initial) ----
+// Note: This gets re-bound upon every HTML injection natively by updateBottomNavHTML,
+// but leaving this block empty natively.
+
 
 // ---- Topbar Global Binds ----
 const profileBtn = document.getElementById('profile-btn');
