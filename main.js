@@ -15,6 +15,7 @@ import { renderMedications } from './pages/medications.js';
 import { renderReport } from './pages/report.js';
 import { renderClearScript } from './pages/clearscript.js';
 import { renderDrugInteraction } from './pages/drug-interaction.js';
+import { renderLogin } from './pages/login.js';
 
 // Expose t() globally so pages can use it
 window.__t = t;
@@ -33,9 +34,10 @@ const pages = {
   medications: renderMedications,
   report: renderReport,
   'drug-interaction': renderDrugInteraction,
+  login: renderLogin,
 };
 
-let currentPage = 'home';
+let currentPage = 'login';
 
 function navigate(page) {
   currentPage = page;
@@ -52,6 +54,18 @@ function navigate(page) {
     main.querySelector('.page-enter') || main.firstElementChild?.classList.add('page-enter');
     bindPageEvents(page);
   }
+  
+  // Hide top & bottom nav for login
+  const topbar = document.getElementById('topbar');
+  const bottomNav = document.getElementById('bottom-nav');
+  if (page === 'login') {
+    if (topbar) topbar.style.display = 'none';
+    if (bottomNav) bottomNav.style.display = 'none';
+  } else {
+    if (topbar) topbar.style.display = 'block';
+    if (bottomNav) bottomNav.style.display = 'flex';
+  }
+
   updateNav(page);
   updateStaticText();
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -102,6 +116,19 @@ function bindPageEvents(page) {
     main.querySelector('#scanner-capture')?.addEventListener('click', () => navigate('clearscript'));
   }
 
+  // Login
+  if (page === 'login') {
+    const form = main.querySelector('#login-form');
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const role = main.querySelector('#role-select').value;
+        // Depending on role we could navigate differently, but let's go 'home' for demo
+        navigate('home');
+      });
+    }
+  }
+
   // ClearScript
   if (page === 'clearscript') {
     main.querySelector('#clearscript-confirm')?.addEventListener('click', () => navigate('risk-analysis'));
@@ -147,4 +174,4 @@ document.querySelectorAll('.nav-item').forEach(item => {
 });
 
 // ---- Initial Load ----
-navigate('home');
+navigate('login');
