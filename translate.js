@@ -207,7 +207,26 @@ const translations = {
     repComp: '100% compliance on Metformin',
     moodSym: 'Mood & Symptom Correlations',
     moodSymDesc: 'Patient logged a 3-day trend of increased stress levels and dizziness, which historically correlates with the introduction of Lisinopril on Mar 19.',
-    shareWithDr: 'Share PDF with Dr. Smith'
+    shareWithDr: 'Share PDF with Dr. Smith',
+
+    // Profile
+    navProfile: 'Profile',
+    profileTitle: 'My Profile',
+    profileSub: 'Manage your holistic health data and app preferences.',
+    healthId: 'Health ID',
+    personalInfo: 'Personal Info',
+    age32: '32 Years',
+    bloodType: 'Blood Type',
+    weightTitle: 'Weight',
+    weightLabel: '72 kg',
+    medicalHistory: 'Medical History',
+    historyDesc: 'View detailed logs of your past diagnoses and treatments.',
+    settingsPrefs: 'Settings & Preferences',
+    darkMode: 'Dark Mode',
+    notifications: 'Push Notifications',
+    dataPrivacy: 'Data Privacy',
+    logout: 'Logout',
+    manageButton: 'Manage'
   },
 
   hi: {
@@ -398,7 +417,26 @@ const translations = {
     repComp: 'मेटफॉर्मिन पर 100% अनुपालन',
     moodSym: 'मूड और लक्षण संबंध',
     moodSymDesc: 'रोगी ने बढ़े हुए तनाव के स्तर और चक्कर आने के 3-दिवसीय रुझान को दर्ज किया है, जो ऐतिहासिक रूप से 19 मार्च को लिसिनोप्रिल की शुरुआत से संबंधित है।',
-    shareWithDr: 'डॉ. स्मिथ के साथ पीडीएफ साझा करें'
+    shareWithDr: 'डॉ. स्मिथ के साथ पीडीएफ साझा करें',
+
+    // Profile
+    navProfile: 'प्रोफ़ाइल',
+    profileTitle: 'मेरी प्रोफ़ाइल',
+    profileSub: 'अपने समग्र स्वास्थ्य डेटा और ऐप प्राथमिकताओं को प्रबंधित करें।',
+    healthId: 'स्वास्थ्य आईडी',
+    personalInfo: 'व्यक्तिगत जानकारी',
+    age32: '32 वर्ष',
+    bloodType: 'रक्त समूह',
+    weightTitle: 'वजन',
+    weightLabel: '72 किग्रा',
+    medicalHistory: 'चिकित्सा इतिहास',
+    historyDesc: 'अपने पिछले निदान और उपचार के विस्तृत लॉग देखें।',
+    settingsPrefs: 'सेटिंग्स और प्राथमिकताएं',
+    darkMode: 'डार्क मोड',
+    notifications: 'पुश सूचनाएं',
+    dataPrivacy: 'डेटा गोपनीयता',
+    logout: 'लॉग आउट',
+    manageButton: 'प्रबंधित करें'
   },
 
   bn: {
@@ -592,8 +630,26 @@ const translations = {
     repComp: 'মেটফর্মিনে ১০০% সম্মতি',
     moodSym: 'মেজাজ এবং লক্ষণ সম্পর্ক',
     moodSymDesc: 'রোগী বর্ধিত চাপের মাত্রা এবং মাথা ঘোরার ৩-দিনের প্রবণতা লগ করেছে, যা ঐতিহাসিকভাবে ১৯ মার্চ লিসিনোপ্রিলের সূচনার সাথে মিলে যায়।',
-    shareWithDr: 'ডাঃ স্মিথের সাথে পিডিএফ শেয়ার করুন'
+    shareWithDr: 'ডাঃ স্মিথের সাথে পিডিএফ শেয়ার করুন',
 
+    // Profile
+    navProfile: 'প্রোফাইল',
+    profileTitle: 'আমার প্রোফাইল',
+    profileSub: 'আপনার সামগ্রিক স্বাস্থ্য ডেটা এবং অ্যাপের পছন্দগুলি পরিচালনা করুন।',
+    healthId: 'স্বাস্থ্য আইডি',
+    personalInfo: 'ব্যক্তিগত তথ্য',
+    age32: '৩২ বছর',
+    bloodType: 'রক্তের গ্রুপ',
+    weightTitle: 'ওজন',
+    weightLabel: '৭২ কেজি',
+    medicalHistory: 'চিকিৎসার ইতিহাস',
+    historyDesc: 'আপনার অতীত রোগ নির্ণয় এবং চিকিত্সার বিস্তারিত লগ দেখুন।',
+    settingsPrefs: 'সেটিংস এবং পছন্দ',
+    darkMode: 'ডার্ক মোড',
+    notifications: 'পুশ বিজ্ঞপ্তি',
+    dataPrivacy: 'ডেটা গোপনীয়তা',
+    logout: 'লগ আউট',
+    manageButton: 'পরিচালনা করুন'
   },
 };
 

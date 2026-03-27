@@ -16,6 +16,7 @@ import { renderReport } from './pages/report.js';
 import { renderClearScript } from './pages/clearscript.js';
 import { renderDrugInteraction } from './pages/drug-interaction.js';
 import { renderLogin } from './pages/login.js';
+import { renderProfile } from './pages/profile.js';
 
 // Expose t() globally so pages can use it
 window.__t = t;
@@ -35,6 +36,7 @@ const pages = {
   report: renderReport,
   'drug-interaction': renderDrugInteraction,
   login: renderLogin,
+  profile: renderProfile,
 };
 
 let currentPage = 'login';
@@ -72,7 +74,7 @@ function navigate(page) {
 }
 
 function updateNav(page) {
-  const navMap = { home: 'home', scanner: 'scanner', clearscript: 'scanner', timeline: 'timeline', mood: 'mood', 'risk-analysis': 'scanner', alert: 'scanner', caregiver: 'home', symptoms: 'home', medications: 'home', report: 'home', 'drug-interaction': 'home' };
+  const navMap = { home: 'home', scanner: 'scanner', clearscript: 'scanner', timeline: 'timeline', mood: 'mood', 'risk-analysis': 'scanner', alert: 'scanner', caregiver: 'home', symptoms: 'home', medications: 'home', report: 'home', 'drug-interaction': 'home', profile: 'home' };
   const activeTab = navMap[page] || page;
   document.querySelectorAll('.nav-item').forEach(item => {
     const itemPage = item.dataset.page;
@@ -153,6 +155,11 @@ function bindPageEvents(page) {
       }
     });
   }
+
+  // Profile
+  if (page === 'profile') {
+    main.querySelector('#profile-logout-btn')?.addEventListener('click', () => navigate('login'));
+  }
 }
 
 // ---- Language Selector ----
@@ -172,6 +179,12 @@ document.querySelectorAll('.nav-item').forEach(item => {
     navigate(item.dataset.page);
   });
 });
+
+// ---- Topbar Global Binds ----
+const profileBtn = document.getElementById('profile-btn');
+if (profileBtn) {
+  profileBtn.addEventListener('click', () => navigate('profile'));
+}
 
 // ---- Initial Load ----
 navigate('login');
