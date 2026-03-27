@@ -1,11 +1,14 @@
 // Mood Tracker
 export function renderMood(navigate) {
+  const t = window.__t;
+  const days = t('days');
+
   const moods = [
-    { icon: 'sentiment_very_dissatisfied', label: 'Low' },
-    { icon: 'sentiment_dissatisfied', label: 'Uneasy' },
-    { icon: 'sentiment_neutral', label: 'Neutral' },
-    { icon: 'sentiment_satisfied', label: 'Calm', selected: true },
-    { icon: 'sentiment_very_satisfied', label: 'High' },
+    { icon: 'sentiment_very_dissatisfied', label: t('moodLow') },
+    { icon: 'sentiment_dissatisfied', label: t('moodUneasy') },
+    { icon: 'sentiment_neutral', label: t('moodNeutral') },
+    { icon: 'sentiment_satisfied', label: t('moodCalm'), selected: true },
+    { icon: 'sentiment_very_satisfied', label: t('moodHigh') },
   ];
 
   const emojiItems = moods.map((m, i) => `
@@ -21,7 +24,7 @@ export function renderMood(navigate) {
   <div class="page-enter">
     <!-- Hero -->
     <section class="mood-hero">
-      <h2 class="page-title" style="font-size:2.75rem;">How are you feeling today?</h2>
+      <h2 class="page-title" style="font-size:2.75rem;">${t('feelToday')}</h2>
       <div class="mood-emoji-row">${emojiItems}</div>
     </section>
 
@@ -29,7 +32,7 @@ export function renderMood(navigate) {
     <section style="margin-bottom:var(--space-10); display:flex; justify-content:center;">
       <div style="background:var(--surface-container); border-radius:var(--radius-full); padding:var(--space-2) var(--space-4); display:inline-flex; align-items:center; gap:var(--space-3);">
         <span class="material-symbols-outlined" style="color:var(--on-surface-variant); font-size:1.25rem;">incognito</span>
-        <span style="font-size:0.875rem; color:var(--on-surface-variant); font-weight:600;">Anonymous Log Mode</span>
+        <span style="font-size:0.875rem; color:var(--on-surface-variant); font-weight:600;">${t('anonMode')}</span>
         <label style="position:relative; display:inline-block; width:2.5rem; height:1.25rem; background:var(--outline-variant); border-radius:var(--radius-full); cursor:pointer;">
           <span style="position:absolute; top:2px; left:2px; width:1rem; height:1rem; background:white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span>
         </label>
@@ -40,7 +43,7 @@ export function renderMood(navigate) {
     <section class="mood-voice-section">
       <button class="btn-tertiary-warm" style="font-size:1rem; padding: var(--space-4) var(--space-8);">
         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic</span>
-        Add a voice note
+        ${t('addVoiceNote')}
       </button>
     </section>
 
@@ -55,12 +58,12 @@ export function renderMood(navigate) {
 
       <div class="mood-graph-header">
         <div>
-          <h3 class="section-title">Weekly Mood Trend</h3>
-          <p style="color:var(--on-surface-variant); font-size:0.875rem;">Your energy is stabilizing in a healthy zone.</p>
+          <h3 class="section-title">${t('weeklyTrend')}</h3>
+          <p style="color:var(--on-surface-variant); font-size:0.875rem;">${t('trendDesc')}</p>
         </div>
         <div class="mood-status-badge">
           <span class="dot"></span>
-          <span class="label-caps">Current: Harmonic</span>
+          <span class="label-caps">${t('currentHarmonic')}</span>
         </div>
       </div>
 
@@ -86,7 +89,7 @@ export function renderMood(navigate) {
       </svg>
 
       <div class="mood-days">
-        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        ${days.map(d => `<span>${d}</span>`).join('')}
       </div>
     </section>
 
@@ -97,8 +100,8 @@ export function renderMood(navigate) {
           <span class="material-symbols-outlined">eco</span>
         </div>
         <div>
-          <h4>Holistic Insight</h4>
-          <p>Your midweek dip suggests an increase in stress. Try taking a short walk or practicing deep breathing tonight.</p>
+          <h4>${t('holisticInsight')}</h4>
+          <p>${t('holisticDesc')}</p>
         </div>
       </div>
       <div class="mood-insight-card">
@@ -106,8 +109,8 @@ export function renderMood(navigate) {
           <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bedtime</span>
         </div>
         <div>
-          <h4>Sleep Synergy</h4>
-          <p>Mood peaks correlate with 8+ hours of rest. Aim for a 10 PM wind-down today.</p>
+          <h4>${t('sleepSynergy')}</h4>
+          <p>${t('sleepDesc')}</p>
         </div>
       </div>
     </section>

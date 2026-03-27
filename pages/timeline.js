@@ -1,10 +1,12 @@
 // Timeline View
 export function renderTimeline(navigate) {
+  const t = window.__t;
+
   return `
   <div class="page-enter">
     <header style="margin-bottom: var(--space-12);">
-      <h2 class="page-title">Your Health Journey</h2>
-      <p class="page-subtitle">Mapping your holistic progress and identifying vital correlations for your well-being.</p>
+      <h2 class="page-title">${t('tlTitle')}</h2>
+      <p class="page-subtitle">${t('tlSub')}</p>
     </header>
 
     <div class="timeline-layout">
@@ -16,9 +18,9 @@ export function renderTimeline(navigate) {
         <div class="timeline-item">
           <div class="timeline-dot timeline-dot--primary"></div>
           <div class="timeline-card">
-            <span class="timeline-date">March 12, 2024</span>
-            <h3>Started Drug X</h3>
-            <p>Initial prescription: 50mg daily. Aimed at managing metabolic energy levels.</p>
+            <span class="timeline-date">${t('tlItem1Date')}</span>
+            <h3>${t('tlItem1Title')}</h3>
+            <p>${t('tlItem1Desc')}</p>
           </div>
         </div>
 
@@ -28,9 +30,9 @@ export function renderTimeline(navigate) {
           <div class="timeline-card">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
               <div>
-                <span class="timeline-date">March 30, 2024</span>
-                <h3>Mood Check-in: Low</h3>
-                <p>Reported persistent lethargy and decreased motivation levels.</p>
+                <span class="timeline-date">${t('tlItem2Date')}</span>
+                <h3>${t('tlItem2Title')}</h3>
+                <p>${t('tlItem2Desc')}</p>
               </div>
               <span class="material-symbols-outlined" style="color:var(--tertiary); font-size: 1.5rem; flex-shrink:0;">wb_sunny</span>
             </div>
@@ -41,9 +43,9 @@ export function renderTimeline(navigate) {
         <div class="timeline-item">
           <div class="timeline-dot timeline-dot--primary"></div>
           <div class="timeline-card">
-            <span class="timeline-date">April 05, 2024</span>
-            <h3>Started Drug Y</h3>
-            <p>Supplementary dosage added to counteract metabolic fluctuations.</p>
+            <span class="timeline-date">${t('tlItem3Date')}</span>
+            <h3>${t('tlItem3Title')}</h3>
+            <p>${t('tlItem3Desc')}</p>
           </div>
         </div>
       </div>
@@ -59,31 +61,31 @@ export function renderTimeline(navigate) {
             <div class="ai-insight-inner">
               <div class="ai-insight-badge">
                 <span class="material-symbols-outlined">auto_awesome</span>
-                <span>AI Analysis</span>
+                <span>${t('tlAiAnalysis')}</span>
               </div>
-              <h4>Mood changes correlate with Drug X start date.</h4>
+              <h4>${t('tlAiTitle')}</h4>
               <div class="ai-insight-observation">
-                <p>Observation: <strong>18 days after</strong> starting Drug X, a notable shift in emotional baseline was detected.</p>
+                <p>${t('tlAiDesc')}</p>
               </div>
-              <button class="ai-insight-btn">View Full Report</button>
+              <button class="ai-insight-btn">${t('tlViewReport')}</button>
             </div>
           </div>
 
           <!-- Health Metrics -->
           <div class="dosha-widget">
-            <span class="label-caps">Health Metrics</span>
+            <span class="label-caps">${t('tlMetricsTitle')}</span>
             <div class="dosha-bars">
               <div class="dosha-bar">
                 <div class="dosha-bar-fill" style="height:75%; background:var(--primary);"></div>
-                <span class="dosha-bar-label">STRESS</span>
+                <span class="dosha-bar-label">${t('tlStress')}</span>
               </div>
               <div class="dosha-bar">
                 <div class="dosha-bar-fill" style="height:50%; background:var(--tertiary);"></div>
-                <span class="dosha-bar-label">ENERGY</span>
+                <span class="dosha-bar-label">${t('tlEnergy')}</span>
               </div>
               <div class="dosha-bar">
                 <div class="dosha-bar-fill" style="height:66%; background:var(--primary-container);"></div>
-                <span class="dosha-bar-label">RECOVERY</span>
+                <span class="dosha-bar-label">${t('tlRecovery')}</span>
               </div>
             </div>
           </div>

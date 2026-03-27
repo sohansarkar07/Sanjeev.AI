@@ -1,11 +1,13 @@
 // Alert Screen
 export function renderAlert(navigate) {
+  const t = window.__t;
+
   return `
   <div class="page-enter" style="max-width: 36rem; margin: 0 auto;">
     <!-- Header -->
     <header style="margin-bottom: var(--space-8);">
-      <h2 class="page-title" style="font-size:1.875rem;">Safety Alert</h2>
-      <p style="color:var(--on-surface-variant); font-weight:500;">Critical Medication Analysis</p>
+      <h2 class="page-title" style="font-size:1.875rem;">${t('alertTitle')}</h2>
+      <p style="color:var(--on-surface-variant); font-weight:500;">${t('alertSub')}</p>
     </header>
 
     <!-- Primary Warning Card -->
@@ -16,12 +18,12 @@ export function renderAlert(navigate) {
           <span class="material-symbols-outlined">warning</span>
         </div>
         <div>
-          <h3>Dangerous Interaction Detected</h3>
-          <p class="severity">Severity: Critical</p>
+          <h3>${t('dangerTitle')}</h3>
+          <p class="severity">${t('sevCritical')}</p>
         </div>
       </div>
       <div class="alert-body">
-        <p>Drug C and Drug D together pose a severe cardiac risk. Do not take them together.</p>
+        <p>${t('dangerDesc')}</p>
       </div>
     </div>
 
@@ -29,13 +31,13 @@ export function renderAlert(navigate) {
     <div class="alert-details-grid">
       <div class="alert-detail-card">
         <span class="material-symbols-outlined">cardiology</span>
-        <h4>Cardiac Impact</h4>
-        <p>Potential for QT interval prolongation and severe arrhythmia.</p>
+        <h4>${t('cardiacImpact')}</h4>
+        <p>${t('cardiacDesc')}</p>
       </div>
       <div class="alert-detail-card">
         <span class="material-symbols-outlined">history</span>
-        <h4>Detection Time</h4>
-        <p>Interaction identified via scan 2 minutes ago.</p>
+        <h4>${t('detectTime')}</h4>
+        <p>${t('detectDesc')}</p>
       </div>
     </div>
 
@@ -43,11 +45,11 @@ export function renderAlert(navigate) {
     <div class="alert-actions">
       <button class="btn-primary" style="width:100%; padding: var(--space-5); font-size:1.125rem; font-weight:700; border-radius: var(--radius-xl); justify-content:center;">
         <span class="material-symbols-outlined">call</span>
-        Notify Doctor Now
+        ${t('notifyDoctor')}
       </button>
       <button class="btn-error">
         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">emergency_home</span>
-        Emergency SOS
+        ${t('emergencySos')}
       </button>
     </div>
 
@@ -56,10 +58,10 @@ export function renderAlert(navigate) {
       <div class="alert-doc-icon">
         <span class="material-symbols-outlined">picture_as_pdf</span>
       </div>
-      <h4>Clinical Documentation</h4>
-      <p>Download a formal pharmacological report to share with your healthcare provider immediately.</p>
+      <h4>${t('clinicalDoc')}</h4>
+      <p>${t('docDesc')}</p>
       <button class="btn-tertiary-warm" style="background: var(--tertiary); color: var(--on-tertiary);">
-        Generate Safety Report for Doctor
+        ${t('genSafetyReport')}
       </button>
     </div>
   </div>
