@@ -39,7 +39,10 @@ const pages = {
   profile: renderProfile,
 };
 
-let currentPage = 'login';
+// Initial States
+window.__isLoggedIn = false;
+window.__currentUserRole = 'patient'; // Default guest experience
+let currentPage = 'home';
 
 function navigate(page) {
   currentPage = page;
@@ -57,10 +60,11 @@ function navigate(page) {
     bindPageEvents(page);
   }
   
-  // Hide top & bottom nav for login
+  // Hide top & bottom nav for auth
   const topbar = document.getElementById('topbar');
   const bottomNav = document.getElementById('bottom-nav');
-  if (page === 'login') {
+  const isAuthView = page === 'profile' && !window.__isLoggedIn;
+  if (isAuthView) {
     if (topbar) topbar.style.display = 'none';
     if (bottomNav) bottomNav.style.display = 'none';
   } else {
@@ -118,25 +122,6 @@ function bindPageEvents(page) {
     main.querySelector('#scanner-capture')?.addEventListener('click', () => navigate('clearscript'));
   }
 
-  // Login
-  if (page === 'login') {
-    const form = main.querySelector('#login-form');
-    if (form) {
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const role = main.querySelector('#role-select').value;
-        window.__currentUserRole = role;
-        
-        // Directly route caregiver to their unique hub, everyone else to home
-        if (role === 'caregiver') {
-          navigate('caregiver');
-        } else {
-          navigate('home');
-        }
-      });
-    }
-  }
-
   // ClearScript
   if (page === 'clearscript') {
     main.querySelector('#clearscript-confirm')?.addEventListener('click', () => navigate('risk-analysis'));
@@ -164,7 +149,48 @@ function bindPageEvents(page) {
 
   // Profile
   if (page === 'profile') {
-    main.querySelector('#profile-logout-btn')?.addEventListener('click', () => navigate('login'));
+    // Auth Form
+    const authForm = main.querySelector('#profile-auth-form');
+    if (authForm) {
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const role = main.querySelector('#role-select').value;
+        window.__isLoggedIn = true;
+        window.__currentUserRole = role;
+        
+        // Navigate
+        navigate(role === 'caregiver' ? 'caregiver' : 'profile');
+      });
+
+      const toggleBtn = main.querySelector('#auth-mode-btn');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const mode = toggleBtn.dataset.mode;
+          const title = main.querySelector('#auth-title');
+          const submitBtn = main.querySelector('#auth-submit span.btn-text');
+          
+          if (mode === 'login') {
+            toggleBtn.dataset.mode = 'signup';
+            title.textContent = 'Create Account';
+            submitBtn.textContent = 'Sign Up';
+            toggleBtn.innerHTML = 'Already have an account? <b style="color:var(--primary-fixed)">Log in</b>';
+          } else {
+            toggleBtn.dataset.mode = 'login';
+            title.textContent = 'Sanjeev AI';
+            submitBtn.textContent = 'Enter Hub';
+            toggleBtn.innerHTML = 'New here? <b style="color:var(--primary-fixed)">Sign up for free</b>';
+          }
+        });
+      }
+    }
+
+    // Logout
+    main.querySelector('#profile-logout-btn')?.addEventListener('click', () => {
+      window.__isLoggedIn = false;
+      window.__currentUserRole = 'patient';
+      navigate('profile'); // Return to auth
+    });
   }
 }
 
@@ -193,4 +219,4 @@ if (profileBtn) {
 }
 
 // ---- Initial Load ----
-navigate('login');
+navigate('home');
