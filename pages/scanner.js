@@ -1,44 +1,39 @@
 // Prescription Scanner
 export function renderScanner(navigate) {
+  const t = window.__t;
+  
   return `
-  <div class="page-enter scanner-page">
-    <!-- Camera Viewfinder -->
-    <div class="scanner-viewfinder">
-      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1nFcHhAUUEFuWj1ykkVKgagZB14a8UGCjUHYwnjKpF1m3fc09VzP3uykXFYl8BjhBqcjryaP5D4uprXkrye8mHhAMFogCd1PgIihL3rsvIKJ-v7dK9IFZyZ2K-vg1q2KG5x1shc_CjsEq47a9yE-ZK62KA2bePhX-fJK-mYYosXMTozxPw2D4RPFluoqXoqdJeGx6eA_uRYG1NMMdLapV06P2kLhKK-Kh7GcTrJyrqA8YWCqwOzJX7VqmqeX60Jo9fWRLH2i4cw" alt="Camera Viewfinder" />
-      <div class="scanner-overlay">
-        <div class="scanner-frame">
-          <div class="corner-tl"><span class="material-symbols-outlined">eco</span></div>
-          <div class="corner-br"><span class="material-symbols-outlined">eco</span></div>
-          <div class="scanner-scan-line"></div>
-          <p>Align your prescription within the frame</p>
-        </div>
+  <div class="page-enter">
+    <header style="margin-bottom:var(--space-6);">
+      <h2 class="page-title">${t('scannerTitle')}</h2>
+      <p class="page-subtitle">${t('scannerSub')}</p>
+    </header>
 
-        <div class="scanner-controls">
-          <button class="scanner-btn-circle scanner-btn-circle--glass">
-            <span class="material-symbols-outlined">flash_on</span>
-          </button>
-          <button class="scanner-btn-circle scanner-btn-circle--capture" id="scanner-capture">
-            <span class="material-symbols-outlined">photo_camera</span>
-          </button>
-          <button class="scanner-btn-circle scanner-btn-circle--glass">
-            <span class="material-symbols-outlined">history</span>
-          </button>
-        </div>
+    <div class="scanner-container">
+      <div class="scanner-frame">
+        <span class="scanner-corner" style="top:10%; left:10%;"></span>
+        <span class="scanner-corner" style="top:10%; right:10%; transform:rotate(90deg);"></span>
+        <span class="scanner-corner" style="bottom:10%; left:10%; transform:rotate(-90deg);"></span>
+        <span class="scanner-corner" style="bottom:10%; right:10%; transform:rotate(180deg);"></span>
+      </div>
+      <div class="scanner-overlay">
+        <p style="background:rgba(0,0,0,0.6); padding:4px 12px; border-radius:20px; font-size:0.875rem;">${t('alignPrescription')}</p>
       </div>
     </div>
 
-    <!-- Upload -->
-    <div class="scanner-upload">
-      <button class="btn-secondary" style="width:100%; justify-content:center;">
-        <span class="material-symbols-outlined">upload_file</span>
-        Upload from Gallery
+    <div style="margin-top:var(--space-8); display:flex; flex-direction:column; gap:var(--space-4);">
+      <button class="btn-primary" id="scanner-capture" style="justify-content:center; padding:16px;">
+        <span class="material-symbols-outlined">camera</span> ${t('captureBtn')}
+      </button>
+      <button class="btn-secondary" style="justify-content:center; padding:16px;">
+        <span class="material-symbols-outlined">photo_library</span> ${t('uploadBtn')}
       </button>
     </div>
 
-    <!-- Privacy -->
-    <div class="scanner-privacy">
-      <span class="material-symbols-outlined">security</span>
-      <span>Privacy Protected • AI Analysis</span>
+    <div style="margin-top:var(--space-6); text-align:center;">
+      <span class="chip" style="background:var(--surface-container); color:var(--on-surface-variant);">
+        <span class="material-symbols-outlined">lock</span> ${t('privacyNote')}
+      </span>
     </div>
   </div>
   `;

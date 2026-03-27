@@ -2,6 +2,7 @@
 // SANJEEV AI — Main Application
 // ============================
 
+import { t, setLanguage, getLanguage } from './translate.js';
 import { renderHome } from './pages/home.js';
 import { renderScanner } from './pages/scanner.js';
 import { renderTimeline } from './pages/timeline.js';
@@ -14,6 +15,9 @@ import { renderMedications } from './pages/medications.js';
 import { renderReport } from './pages/report.js';
 import { renderClearScript } from './pages/clearscript.js';
 import { renderDrugInteraction } from './pages/drug-interaction.js';
+
+// Expose t() globally so pages can use it
+window.__t = t;
 
 // ---- Router ----
 const pages = {
@@ -49,6 +53,7 @@ function navigate(page) {
     bindPageEvents(page);
   }
   updateNav(page);
+  updateStaticText();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -61,10 +66,26 @@ function updateNav(page) {
   });
 }
 
+// Updates static elements (header, nav labels) that live in index.html
+function updateStaticText() {
+  // Brand name
+  const brand = document.querySelector('.brand-name');
+  if (brand) brand.textContent = t('brandName');
+
+  // Bottom nav labels
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const label = item.querySelector('.nav-label');
+    if (!label) return;
+    const page = item.dataset.page;
+    const map = { home: 'navHome', scanner: 'navScanner', timeline: 'navTimeline', mood: 'navMood' };
+    if (map[page]) label.textContent = t(map[page]);
+  });
+}
+
 function bindPageEvents(page) {
   const main = document.getElementById('main-content');
 
-  // Home page: quick action cards & tools navigate
+  // Home page
   if (page === 'home') {
     main.querySelector('#action-scan')?.addEventListener('click', () => navigate('scanner'));
     main.querySelector('#action-mood')?.addEventListener('click', () => navigate('mood'));
@@ -76,24 +97,17 @@ function bindPageEvents(page) {
     main.querySelector('#tool-interaction')?.addEventListener('click', () => navigate('drug-interaction'));
   }
 
-  // Scanner: capture -> clearscript
+  // Scanner
   if (page === 'scanner') {
-    main.querySelector('#scanner-capture')?.addEventListener('click', () => {
-      navigate('clearscript');
-    });
+    main.querySelector('#scanner-capture')?.addEventListener('click', () => navigate('clearscript'));
   }
 
-  // ClearScript: confirm -> risk analysis
+  // ClearScript
   if (page === 'clearscript') {
     main.querySelector('#clearscript-confirm')?.addEventListener('click', () => navigate('risk-analysis'));
   }
 
-  // Risk Analysis: back to alert from status
-  if (page === 'risk-analysis') {
-    // Buttons are informational for now
-  }
-
-  // Mood: emoji selection
+  // Mood
   if (page === 'mood') {
     const emojiBtns = main.querySelectorAll('.mood-emoji-btn');
     emojiBtns.forEach(btn => {
@@ -104,15 +118,24 @@ function bindPageEvents(page) {
     });
   }
 
-  // Drug Interaction page events
+  // Drug Interaction
   if (page === 'drug-interaction') {
-    // Import and initialize D3 safety map
     import('https://cdn.jsdelivr.net/npm/d3@7/+esm').then(d3 => {
       if (typeof window.__initSafetyMap === 'function') {
         window.__initSafetyMap(d3);
       }
     });
   }
+}
+
+// ---- Language Selector ----
+const langSelect = document.querySelector('select[aria-label="Language Selector"]');
+if (langSelect) {
+  langSelect.addEventListener('change', (e) => {
+    setLanguage(e.target.value);
+    // Re-render current page with new language
+    navigate(currentPage);
+  });
 }
 
 // ---- Bottom Nav Binding ----

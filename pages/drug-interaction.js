@@ -1,5 +1,6 @@
 // Drug Interaction Checker — Pure Vanilla JS
 export function renderDrugInteraction(navigate) {
+  const t = window.__t;
 
   // ---- Data ----
   const drugs = [
@@ -9,19 +10,11 @@ export function renderDrugInteraction(navigate) {
     { id: 'Metformin', dose: '500mg', doctor: 'Endocrinologist', risk: 'safe' },
   ];
 
-  const interactions = [
-    { source: 'Fluoxetine', target: 'Metoprolol', type: 'cascade', explanation: 'Fluoxetine inhibits CYP2D6 enzyme blocking clearance of Metoprolol. Plasma levels rise — accumulation risk.' },
-    { source: 'Celecoxib', target: 'Metoprolol', type: 'caution', explanation: 'Celecoxib may reduce antihypertensive effect of Metoprolol and also inhibits CYP2D6.' },
-  ];
-
-  const technicalText = 'Fluoxetine inhibits CYP2D6 enzyme blocking clearance of Metoprolol. Plasma levels rise — accumulation risk.';
-  const simpleText = 'Fluoxetine stops your body from removing Metoprolol properly. Too much Metoprolol builds up in your blood. This can affect your heart. Tell your doctor immediately.';
-
   // ---- Risk Badge Helper ----
   function riskBadge(risk) {
     const colors = { danger: '#FF3D5A', caution: '#FFD600', safe: '#00C853' };
     const bg = { danger: '#FFF0F1', caution: '#FFFDE7', safe: '#E8F5E9' };
-    return `<span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${colors[risk]};background:${bg[risk]};border:1px solid ${colors[risk]}20;">${risk}</span>`;
+    return `<span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${colors[risk]};background:${bg[risk]};border:1px solid ${colors[risk]}20;">${t(risk+'Drug').split(' ')[0]}</span>`;
   }
 
   // ---- Doctor Options ----
@@ -57,8 +50,8 @@ export function renderDrugInteraction(navigate) {
   return `
   <div class="page-enter" id="drug-interaction-page">
     <header style="margin-bottom:var(--space-8);">
-      <h2 class="page-title">Drug Interaction Checker</h2>
-      <p class="page-subtitle">Comprehensive safety analysis for patient medication regimens.</p>
+      <h2 class="page-title">${t('drugInteractionTitle')}</h2>
+      <p class="page-subtitle">${t('drugInteractionSub')}</p>
     </header>
 
     <div style="display:grid;grid-template-columns:1fr;gap:var(--space-8);">
@@ -67,19 +60,19 @@ export function renderDrugInteraction(navigate) {
       <section class="card-white" style="border:1px solid var(--outline-variant);">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:var(--space-4);">
           <span class="material-symbols-outlined" style="color:var(--primary-container);font-size:1.25rem;">person</span>
-          <h3 style="font-weight:700;font-size:1.1rem;color:var(--primary);">Patient Context</h3>
+          <h3 style="font-weight:700;font-size:1.1rem;color:var(--primary);">${t('patientContext')}</h3>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);">
           <div>
-            <label class="label-caps" style="display:block;margin-bottom:4px;">Age</label>
-            <input id="patient-age" type="number" placeholder="e.g. 68" style="width:100%;padding:10px 14px;border-radius:var(--radius-lg);border:1px solid var(--outline-variant);font-family:var(--font-body);font-size:0.95rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--outline-variant)'" />
+            <label class="label-caps" style="display:block;margin-bottom:4px;">${t('age')}</label>
+            <input id="patient-age" type="number" placeholder="68" style="width:100%;padding:10px 14px;border-radius:var(--radius-lg);border:1px solid var(--outline-variant);font-family:var(--font-body);font-size:0.95rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--outline-variant)'" />
           </div>
           <div style="grid-column:span 2;">
-            <label class="label-caps" style="display:block;margin-bottom:4px;">Known Allergies</label>
-            <input id="patient-allergies" type="text" placeholder="e.g. Penicillin, Sulfa" style="width:100%;padding:10px 14px;border-radius:var(--radius-lg);border:1px solid var(--outline-variant);font-family:var(--font-body);font-size:0.95rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--outline-variant)'" />
+            <label class="label-caps" style="display:block;margin-bottom:4px;">${t('knownAllergies')}</label>
+            <input id="patient-allergies" type="text" placeholder="Penicillin, Sulfa" style="width:100%;padding:10px 14px;border-radius:var(--radius-lg);border:1px solid var(--outline-variant);font-family:var(--font-body);font-size:0.95rem;outline:none;transition:border-color 0.2s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--outline-variant)'" />
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface-container-low);padding:12px 16px;border-radius:var(--radius-xl);">
-            <span style="font-size:0.875rem;font-weight:600;">Kidney Issue</span>
+            <span style="font-size:0.875rem;font-weight:600;">${t('kidneyIssue')}</span>
             <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
               <input type="checkbox" id="kidney-toggle" style="opacity:0;width:0;height:0;">
               <span class="toggle-track" style="position:absolute;inset:0;background:var(--outline-variant);border-radius:24px;transition:background 0.3s;"></span>
@@ -87,7 +80,7 @@ export function renderDrugInteraction(navigate) {
             </label>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface-container-low);padding:12px 16px;border-radius:var(--radius-xl);">
-            <span style="font-size:0.875rem;font-weight:600;">Liver Issue</span>
+            <span style="font-size:0.875rem;font-weight:600;">${t('liverIssue')}</span>
             <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
               <input type="checkbox" id="liver-toggle" style="opacity:0;width:0;height:0;">
               <span class="toggle-track" style="position:absolute;inset:0;background:var(--outline-variant);border-radius:24px;transition:background 0.3s;"></span>
@@ -100,9 +93,9 @@ export function renderDrugInteraction(navigate) {
       <!-- SECTION 2: Medication List -->
       <section>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-4);">
-          <h3 style="font-weight:700;font-size:1.1rem;color:var(--primary);">Medication List</h3>
+          <h3 style="font-weight:700;font-size:1.1rem;color:var(--primary);">${t('medicationList')}</h3>
           <button id="add-drug-btn" class="btn-secondary" style="padding:6px 16px;font-size:0.8rem;">
-            <span class="material-symbols-outlined" style="font-size:1rem;">add</span> Add Another
+            <span class="material-symbols-outlined" style="font-size:1rem;">add</span> ${t('addAnother')}
           </button>
         </div>
         <div id="medication-list" style="display:flex;flex-direction:column;gap:var(--space-3);">
@@ -112,20 +105,20 @@ export function renderDrugInteraction(navigate) {
 
       <!-- SECTION 3: Overall Risk Score -->
       <section class="card-white" style="border:1px solid var(--outline-variant);text-align:center;">
-        <span class="label-caps" style="letter-spacing:0.2em;">Overall Risk Score</span>
+        <span class="label-caps" style="letter-spacing:0.2em;">${t('overallRiskScore')}</span>
         <div style="font-size:4rem;font-weight:900;color:var(--on-surface);line-height:1;margin:8px 0;">8.2<span style="font-size:1.5rem;color:var(--on-surface-variant);font-weight:500;">/10</span></div>
         <div style="width:100%;height:10px;background:var(--surface-container);border-radius:var(--radius-full);overflow:hidden;margin:12px 0;">
           <div style="width:82%;height:100%;background:linear-gradient(90deg,#00C853,#FFD600 40%,#FF3D5A 80%);border-radius:var(--radius-full);transition:width 1s;"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">
-          <span style="color:#00C853;">Low</span>
-          <span style="color:#FFD600;">Moderate</span>
-          <span style="color:#FF3D5A;">High</span>
-          <span style="color:#C62828;">Critical</span>
+          <span style="color:#00C853;">${t('low')}</span>
+          <span style="color:#FFD600;">${t('moderate')}</span>
+          <span style="color:#FF3D5A;">${t('high')}</span>
+          <span style="color:#C62828;">${t('critical')}</span>
         </div>
         <div style="margin-top:12px;display:flex;justify-content:center;gap:16px;">
-          <span class="chip" style="background:#FFF0F1;color:#FF3D5A;font-weight:700;font-size:0.75rem;">1 cascade path</span>
-          <span class="chip" style="background:#FFFDE7;color:#F9A825;font-weight:700;font-size:0.75rem;">1 pairwise</span>
+          <span class="chip" style="background:#FFF0F1;color:#FF3D5A;font-weight:700;font-size:0.75rem;">${t('cascadePath')}</span>
+          <span class="chip" style="background:#FFFDE7;color:#F9A825;font-weight:700;font-size:0.75rem;">${t('pairwise')}</span>
         </div>
       </section>
 
@@ -137,17 +130,17 @@ export function renderDrugInteraction(navigate) {
           </div>
           <div style="flex:1;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-              <h4 style="font-weight:800;color:#E65100;font-style:italic;">Hidden Prescription Cascade Detected</h4>
-              <span id="evidence-badge" style="background:#FFAB40;color:#fff;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:0.1em;">GRADE B</span>
+              <h4 style="font-weight:800;color:#E65100;font-style:italic;">${t('cascadeDetected')}</h4>
+              <span id="evidence-badge" style="background:#FFAB40;color:#fff;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:0.1em;">${t('gradeB')}</span>
             </div>
-            <p id="cascade-text" style="font-size:0.875rem;color:#795548;line-height:1.7;margin-bottom:16px;">${technicalText}</p>
+            <p id="cascade-text" style="font-size:0.875rem;color:#795548;line-height:1.7;margin-bottom:16px;" data-state="technical">${t('cascadeTechnical')}</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;border-top:1px solid #FFD60040;padding-top:12px;">
               <div>
-                <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:#A1887F;font-weight:700;">Inhibitors</span>
+                <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:#A1887F;font-weight:700;">${t('inhibitors')}</span>
                 <div style="font-weight:700;font-size:0.875rem;margin-top:2px;">Fluoxetine, Celecoxib</div>
               </div>
               <div>
-                <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:#A1887F;font-weight:700;">Affected Drug</span>
+                <span style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:#A1887F;font-weight:700;">${t('affectedDrug')}</span>
                 <div style="font-weight:700;font-size:0.875rem;margin-top:2px;">Metoprolol</div>
               </div>
             </div>
@@ -165,27 +158,27 @@ export function renderDrugInteraction(navigate) {
           <div style="padding:20px 24px;border-bottom:1px solid #21262D;display:flex;align-items:center;justify-content:space-between;">
             <div>
               <div style="display:flex;align-items:center;gap:8px;">
-                <h3 style="font-weight:800;font-size:1.2rem;background:linear-gradient(90deg,#58A6FF,#3FB9A0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Safety Map™</h3>
-                <span style="font-size:0.6rem;background:#3FB9A020;color:#3FB9A0;padding:3px 10px;border-radius:20px;font-weight:700;">LIVE NETWORK</span>
+                <h3 style="font-weight:800;font-size:1.2rem;background:linear-gradient(90deg,#58A6FF,#3FB9A0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">${t('safetyMapTitle')}</h3>
+                <span style="font-size:0.6rem;background:#3FB9A020;color:#3FB9A0;padding:3px 10px;border-radius:20px;font-weight:700;">${t('liveNetwork')}</span>
               </div>
-              <p style="font-size:0.75rem;color:#8B949E;margin-top:4px;">Interactive drug interaction network</p>
+              <p style="font-size:0.75rem;color:#8B949E;margin-top:4px;">${t('interactiveNetwork')}</p>
             </div>
             <div style="display:flex;gap:12px;font-size:0.65rem;color:#8B949E;font-weight:600;">
-              <span>⊙ Drag nodes</span>
-              <span>⊙ Scroll to zoom</span>
+              <span>⊙ ${t('dragNodes')}</span>
+              <span>⊙ ${t('scrollZoom')}</span>
             </div>
           </div>
           <div id="safety-map-container" style="height:420px;position:relative;overflow:hidden;">
             <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8B949E;font-size:0.875rem;">
-              Loading Safety Map...
+              ${t('loadingMap')}
             </div>
           </div>
           <!-- Legend -->
           <div style="padding:12px 24px;border-top:1px solid #21262D;display:flex;gap:20px;">
-            <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#FF3D5A;box-shadow:0 0 6px #FF3D5A80;"></div><span style="font-size:0.65rem;color:#8B949E;font-weight:700;">Cascade drug</span></div>
-            <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#FFD600;"></div><span style="font-size:0.65rem;color:#8B949E;font-weight:700;">Caution drug</span></div>
-            <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#00C853;"></div><span style="font-size:0.65rem;color:#8B949E;font-weight:700;">Safe drug</span></div>
-            <div style="display:flex;align-items:center;gap:6px;"><div style="width:16px;height:2px;background:#FF3D5A;"></div><span style="font-size:0.65rem;color:#8B949E;font-weight:700;">Cascade path</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#FF3D5A;box-shadow:0 0 6px #FF3D5A80;"></div><span style="font-size:0.65rem;color:#8B949E;font-weight:700;">${t('cascadeDrug')}</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#FFD600;"></div><span style="font-size:0.65rem;color:#8B949E;font-weight:700;">${t('cautionDrug')}</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:50%;background:#00C853;"></div><span style="font-size:0.65rem;color:#8B949E;font-weight:700;">${t('safeDrug')}</span></div>
+            <div style="display:flex;align-items:center;gap:6px;"><div style="width:16px;height:2px;background:#FF3D5A;"></div><span style="font-size:0.65rem;color:#8B949E;font-weight:700;">${t('cascadePathLegend')}</span></div>
           </div>
         </div>
       </section>
@@ -193,16 +186,16 @@ export function renderDrugInteraction(navigate) {
       <!-- SECTION 6: Action Buttons -->
       <section style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);">
         <button id="copy-report-btn" class="btn-secondary" style="justify-content:center;padding:14px;font-weight:700;border-radius:var(--radius-xl);">
-          <span class="material-symbols-outlined" style="font-size:1.1rem;">content_copy</span> Copy Report
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">content_copy</span> ${t('copyReport')}
         </button>
         <button id="export-pdf-btn" class="btn-secondary" style="justify-content:center;padding:14px;font-weight:700;border-radius:var(--radius-xl);">
-          <span class="material-symbols-outlined" style="font-size:1.1rem;">picture_as_pdf</span> Export PDF
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">picture_as_pdf</span> ${t('exportPdf')}
         </button>
         <button id="alert-doctor-btn" class="btn-error" style="grid-column:span 2;border-radius:var(--radius-xl);">
-          <span class="material-symbols-outlined">medical_services</span> Alert Cardiologist & Psychiatrist
+          <span class="material-symbols-outlined">medical_services</span> ${t('alertDoctor')}
         </button>
         <button id="make-simpler-btn" style="grid-column:span 2;background:var(--primary-container);color:var(--on-primary);padding:14px;border-radius:var(--radius-xl);font-weight:700;font-size:0.95rem;display:flex;align-items:center;justify-content:center;gap:8px;transition:opacity 0.2s;cursor:pointer;">
-          <span class="material-symbols-outlined" style="font-size:1.1rem;">auto_awesome</span> Make Simpler
+          <span class="material-symbols-outlined" style="font-size:1.1rem;">auto_awesome</span> <span id="make-simpler-text">${t('makeSimpler')}</span>
         </button>
       </section>
 
@@ -217,6 +210,7 @@ window.__initSafetyMap = function(d3) {
   if (!container) return;
   container.innerHTML = '';
 
+  const t = window.__t;
   const width = container.clientWidth;
   const height = container.clientHeight;
 
@@ -314,14 +308,6 @@ window.__initSafetyMap = function(d3) {
         <button onclick="this.closest('.node-popup').remove()" style="border:none;background:none;cursor:pointer;font-size:1.2rem;color:#aaa;">✕</button>
       </div>
       <div style="margin-bottom:12px;">${riskBadgeHTML(d.risk)} <span style="font-size:0.6rem;background:#E8EAF6;color:#5C6BC0;padding:2px 8px;border-radius:12px;font-weight:700;margin-left:4px;">Grade B</span></div>
-      <div style="margin-bottom:8px;">
-        <span style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-weight:700;">Interacts with</span>
-        <div style="font-weight:700;font-size:0.8rem;margin-top:2px;">${d.risk !== 'safe' ? 'Metoprolol, Celecoxib' : 'No interactions'}</div>
-      </div>
-      <div>
-        <span style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;color:#aaa;font-weight:700;">Clinical Insight</span>
-        <p style="font-size:0.75rem;color:#555;margin-top:4px;line-height:1.6;">${d.risk === 'danger' ? 'This drug blocks the enzyme that removes other medications from your body.' : d.risk === 'caution' ? 'May reduce effectiveness of other medications.' : 'No significant interactions detected.'}</p>
-      </div>
     `;
     container.appendChild(popup);
   });
@@ -329,7 +315,7 @@ window.__initSafetyMap = function(d3) {
   function riskBadgeHTML(risk) {
     const c = { danger: '#FF3D5A', caution: '#FFD600', safe: '#00C853' };
     const bg = { danger: '#FFF0F1', caution: '#FFFDE7', safe: '#E8F5E9' };
-    return `<span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:0.6rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${c[risk]};background:${bg[risk]};border:1px solid ${c[risk]}20;">${risk} risk</span>`;
+    return `<span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:0.6rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:${c[risk]};background:${bg[risk]};border:1px solid ${c[risk]}20;">${t(risk+'Drug').split(' ')[0]} risk</span>`;
   }
 
   simulation.on('tick', () => {
@@ -354,22 +340,26 @@ window.__initSafetyMap = function(d3) {
   });
 
   // ---- Make Simpler ----
-  let isSimple = false;
-  const technicalText = 'Fluoxetine inhibits CYP2D6 enzyme blocking clearance of Metoprolol. Plasma levels rise — accumulation risk.';
-  const simpleText = 'Fluoxetine stops your body from removing Metoprolol properly. Too much Metoprolol builds up in your blood. This can affect your heart. Tell your doctor immediately.';
-
   document.getElementById('make-simpler-btn')?.addEventListener('click', () => {
-    isSimple = !isSimple;
     const textEl = document.getElementById('cascade-text');
-    const btn = document.getElementById('make-simpler-btn');
-    if (textEl) textEl.textContent = isSimple ? simpleText : technicalText;
-    if (btn) btn.innerHTML = `<span class="material-symbols-outlined" style="font-size:1.1rem;">auto_awesome</span> ${isSimple ? 'Restore Medical Terms' : 'Make Simpler'}`;
+    const textSpan = document.getElementById('make-simpler-text');
+    if (textEl && textSpan) {
+      if (textEl.dataset.state === 'technical') {
+        textEl.textContent = t('cascadeSimple');
+        textEl.dataset.state = 'simple';
+        textSpan.textContent = t('restoreMedical');
+      } else {
+        textEl.textContent = t('cascadeTechnical');
+        textEl.dataset.state = 'technical';
+        textSpan.textContent = t('makeSimpler');
+      }
+    }
   });
 
   // ---- Copy Report ----
   document.getElementById('copy-report-btn')?.addEventListener('click', () => {
     const report = `Sanjeev AI — Drug Interaction Report\nDate: ${new Date().toLocaleDateString()}\nRisk Score: 8.2/10 (HIGH)\n\nMedications:\n- Fluoxetine 20mg (Psychiatrist) [DANGER]\n- Metoprolol 50mg (Cardiologist) [DANGER]\n- Celecoxib 200mg (Rheumatologist) [CAUTION]\n- Metformin 500mg (Endocrinologist) [SAFE]\n\nCascade Detected:\nFluoxetine inhibits CYP2D6 enzyme blocking clearance of Metoprolol.\nInhibitors: Fluoxetine, Celecoxib\nAffected: Metoprolol\nEvidence Grade: B`;
-    navigator.clipboard.writeText(report).then(() => alert('Report copied to clipboard!'));
+    navigator.clipboard.writeText(report).then(() => alert('Report copied!'));
   });
 
   // ---- Export PDF (simple text-based) ----
@@ -386,14 +376,11 @@ window.__initSafetyMap = function(d3) {
       <div class="med">Metformin 500mg — Endocrinologist — <span style="color:#00C853;">SAFE</span></div>
       <h2>Cascade Warning</h2>
       <p>Fluoxetine inhibits CYP2D6 enzyme blocking clearance of Metoprolol. Plasma levels rise — accumulation risk.</p>
-      <p><strong>Inhibitors:</strong> Fluoxetine, Celecoxib</p>
-      <p><strong>Affected:</strong> Metoprolol</p>
-      <p><strong>Evidence Grade:</strong> B</p>
       <script>window.print();</script></body></html>`);
   });
 
   // ---- Alert Doctor ----
   document.getElementById('alert-doctor-btn')?.addEventListener('click', () => {
-    alert('🚨 Alert sent to Cardiologist and Psychiatrist!\n\nCascade interaction detected between Fluoxetine and Metoprolol.\nRisk Score: 8.2/10\nImmediate review recommended.');
+    alert('🚨 Alert sent to Cardiologist and Psychiatrist!');
   });
 };
