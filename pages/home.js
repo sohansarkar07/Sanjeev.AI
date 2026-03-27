@@ -1,6 +1,20 @@
-// Home Dashboard
+// Home Dashboard with Role-Based Rendering
 export function renderHome(navigate) {
-  const t = window.__t;
+  const role = window.__currentUserRole || 'patient';
+
+  if (role === 'doctor') return renderDoctorMode(navigate);
+  if (role === 'pharmacist') return renderPharmacistMode(navigate);
+  if (role === 'hospital') return renderHospitalMode(navigate);
+  
+  // Default 'patient' mode
+  return renderPatientMode(navigate);
+}
+
+// ----------------------------------------------------
+// PATIENT (Default) HUB
+// ----------------------------------------------------
+function renderPatientMode(navigate) {
+  const t = window.__t || ((key) => key);
   const circumference = 2 * Math.PI * 58;
   const score = 85;
   const offset = circumference * (1 - score / 100);
@@ -115,6 +129,162 @@ export function renderHome(navigate) {
         <p>${t('insightDesc')}</p>
       </div>
     </section>
+  </div>
+  `;
+}
+
+// ----------------------------------------------------
+// DOCTOR HUB
+// ----------------------------------------------------
+function renderDoctorMode(navigate) {
+  return `
+  <div class="page-enter">
+    <header style="margin-bottom: var(--space-8);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h2 class="page-title">Doctor Portal</h2>
+          <p class="page-subtitle">Patient Safety Overview</p>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--primary); font-size:2rem;">medical_services</span>
+      </div>
+    </header>
+
+    <!-- Alerts -->
+    <div class="alert-warning-card" style="margin-bottom:var(--space-6); background:var(--error-container); color:var(--on-error-container);">
+      <div class="alert-header">
+        <div class="alert-icon-wrap" style="background:var(--error); color:white;"><span class="material-symbols-outlined">warning</span></div>
+        <div>
+          <h3 style="color:var(--error);">Critical Interaction Detected</h3>
+          <p class="severity">Patient: Rahul S.</p>
+        </div>
+      </div>
+      <div class="alert-body">
+        <p>Fluoxetine & Metoprolol cascade risk detected. Requires immediate review.</p>
+        <button class="btn-primary" style="margin-top:var(--space-2); background:var(--error); color:white;" id="dr-action-resolve">Review Protocol</button>
+      </div>
+    </div>
+
+    <!-- Patient Roster -->
+    <h3 class="section-title" style="margin-bottom:var(--space-4);">Your Patients</h3>
+    <div style="display:grid; gap:var(--space-4); margin-bottom:var(--space-8);">
+      
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; gap:var(--space-3); align-items:center;">
+          <div class="brand-avatar" style="width:3rem; height:3rem;">
+             <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Rahul" style="width:100%; border-radius:50%;"/>
+          </div>
+          <div>
+            <h4 style="font-weight:700;">Rahul S.</h4>
+            <p style="font-size:0.75rem; color:var(--on-surface-variant);">Risk Score: <span style="color:var(--error); font-weight:700;">HIGH</span></p>
+          </div>
+        </div>
+        <button class="icon-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+      </div>
+
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; gap:var(--space-3); align-items:center;">
+          <div class="brand-avatar" style="width:3rem; height:3rem; background:var(--secondary-container);">
+             <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Anita" style="width:100%; border-radius:50%;"/>
+          </div>
+          <div>
+            <h4 style="font-weight:700;">Anita P.</h4>
+            <p style="font-size:0.75rem; color:var(--on-surface-variant);">Risk Score: <span style="color:var(--primary); font-weight:700;">SAFE</span></p>
+          </div>
+        </div>
+        <button class="icon-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+      </div>
+
+    </div>
+  </div>
+  `;
+}
+
+// ----------------------------------------------------
+// PHARMACIST HUB
+// ----------------------------------------------------
+function renderPharmacistMode(navigate) {
+  return `
+  <div class="page-enter">
+    <header style="margin-bottom: var(--space-8);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h2 class="page-title">Pharmacy Queue</h2>
+          <p class="page-subtitle">Verification & Dispensary</p>
+        </div>
+        <span class="material-symbols-outlined" style="color:var(--tertiary); font-size:2rem;">local_pharmacy</span>
+      </div>
+    </header>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:var(--space-4); margin-bottom:var(--space-8);">
+      <div class="card" style="text-align:center; background:var(--tertiary-fixed);">
+        <h2 style="font-size:2rem; color:var(--on-tertiary-fixed);">14</h2>
+        <p style="font-size:0.875rem; font-weight:600; color:var(--on-tertiary-fixed);">Pending Scripts</p>
+      </div>
+      <div class="card" style="text-align:center; background:var(--primary-fixed);">
+        <h2 style="font-size:2rem; color:var(--on-primary-fixed);">2</h2>
+        <p style="font-size:0.875rem; font-weight:600; color:var(--on-primary-fixed);">Interactions Flagged</p>
+      </div>
+    </div>
+
+    <h3 class="section-title" style="margin-bottom:var(--space-4);">Active Dispensary Orders</h3>
+    <div class="card" style="border-left: 4px solid var(--tertiary); margin-bottom:var(--space-4);">
+      <div style="display:flex; justify-content:space-between; margin-bottom:var(--space-2);">
+        <h4 style="font-weight:700;">Rx-8821 (Rahul S.)</h4>
+        <span class="chip" style="background:var(--error-container); color:var(--on-error-container);">Needs Review</span>
+      </div>
+      <p style="font-size:0.875rem; color:var(--on-surface-variant); margin-bottom:var(--space-4);">Metformin (Glucophage) + Fluoxetine</p>
+      <div style="display:flex; gap:var(--space-2);">
+         <button class="btn-primary" style="flex:1; padding:var(--space-2); background:var(--tertiary); color:white; justify-content:center;">Suggest Generic</button>
+         <button class="btn-secondary" style="flex:1; padding:var(--space-2); justify-content:center;">Hold Order</button>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+// ----------------------------------------------------
+// HOSPITAL / CLINIC HUB
+// ----------------------------------------------------
+function renderHospitalMode(navigate) {
+  return `
+  <div class="page-enter">
+    <header style="margin-bottom: var(--space-8);">
+      <h2 class="page-title">Hospital Admin</h2>
+      <p class="page-subtitle">Sanjeev AI Facility Overview</p>
+    </header>
+
+    <div class="card" style="background:linear-gradient(135deg, var(--primary) 0%, #011E13 100%); color:white; margin-bottom:var(--space-6);">
+      <h3 style="color:var(--primary-fixed); font-size:0.875rem; text-transform:uppercase; margin-bottom:var(--space-6); letter-spacing:1px;">Global Facility Health</h3>
+      
+      <div style="display:flex; align-items:flex-end; gap:var(--space-8); margin-bottom:var(--space-4);">
+        <div>
+          <span style="font-size:3rem; font-weight:700; line-height:1;">92<span style="font-size:1.5rem;">%</span></span>
+          <p style="font-size:0.875rem; color:rgba(255,255,255,0.7);">Overall Safety Index</p>
+        </div>
+        <div>
+          <span style="font-size:2rem; font-weight:700; line-height:1; color:var(--error-container);">3</span>
+          <p style="font-size:0.875rem; color:rgba(255,255,255,0.7);">Active Cascades</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title" style="margin-bottom:var(--space-4);">Ward Analysis</h3>
+    <ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:var(--space-3);">
+       <li class="card" style="display:flex; justify-content:space-between; align-items:center; padding:var(--space-4);">
+          <div>
+            <h4 style="font-weight:700;">ICU - Cardiac</h4>
+            <p style="font-size:0.75rem; color:var(--on-surface-variant);">Capacity: 12/15</p>
+          </div>
+          <span class="chip" style="background:var(--primary-container); color:var(--on-primary-container);">Safe</span>
+       </li>
+       <li class="card" style="display:flex; justify-content:space-between; align-items:center; padding:var(--space-4);">
+          <div>
+            <h4 style="font-weight:700;">Ward B - Psychiatry</h4>
+            <p style="font-size:0.75rem; color:var(--on-surface-variant);">Capacity: 30/40</p>
+          </div>
+          <span class="chip" style="background:var(--error-container); color:var(--on-error-container);">2 Alerts</span>
+       </li>
+    </ul>
   </div>
   `;
 }

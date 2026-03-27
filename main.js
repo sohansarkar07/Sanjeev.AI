@@ -125,8 +125,14 @@ function bindPageEvents(page) {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         const role = main.querySelector('#role-select').value;
-        // Depending on role we could navigate differently, but let's go 'home' for demo
-        navigate('home');
+        window.__currentUserRole = role;
+        
+        // Directly route caregiver to their unique hub, everyone else to home
+        if (role === 'caregiver') {
+          navigate('caregiver');
+        } else {
+          navigate('home');
+        }
       });
     }
   }
