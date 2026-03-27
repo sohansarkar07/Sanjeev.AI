@@ -72,28 +72,31 @@ Build an **AI-powered safety layer** that comprehensively connects physical medi
 ### System Flow
 ```mermaid
 graph TD
-    User([Patients, Doctors, Caregivers]) -->|Prescription Image / Voice / Text| Input[Input Layer]
-    Input --> SanjeevAI
+    User(["Patients, Doctors, Caregivers"]) -->|"Prescription Image / Voice / Text"| Input["Input Layer"]
+    Input --> SanjeevAI["Sanjeev AI Platform"]
     
-    subgraph "Sanjeev AI Backend"
-        OCR[OCR + NLP Processing<br/>Extract text & medicine details]
-        Engine[AI & Drug Intelligence Engine<br/>Interactions • Side Effects • Cascade Detection]
-        Data[Data & Storage Layer<br/>Medications • Timeline • Mood History]
-        Alerts[Alert & Notification Engine<br/>Real-time Risks • Doctor & Caregiver Alerts]
+    subgraph Backend ["Sanjeev AI Backend"]
+        OCR["OCR & NLP Processing<br/>Extract text & medicine details"]
+        Engine["AI & Drug Intelligence Engine<br/>Interactions • Side Effects • Cascade Detection"]
+        Data["Data & Storage Layer<br/>Medications • Timeline • Mood History"]
+        AlertEngine["Alert & Notification Engine<br/>Real-time Risks • Doctor & Caregiver Alerts"]
         
         OCR --> Engine
         Engine --> Data
-        Data --> Alerts
+        Data --> AlertEngine
     end
     
-    Alerts -->|"Push Notifications & PDF Reports"| Output{Output Layer}
-    Output --> Safe((Safe ✔️))
-    Output --> Caution((Caution ⚠️))
-    Output --> Danger((Danger ❌))
+    SanjeevAI --> OCR
     
-    subgraph "Security & Privacy (Cloud Deployment)"
-        Sec[End-End Encryption • HIPAA Ready • Role-Based Access]
+    AlertEngine -->|"Push Notifications & PDF Reports"| Output{"Output Layer"}
+    Output --> Safe(("Safe ✔️"))
+    Output --> Caution(("Caution ⚠️"))
+    Output --> Danger(("Danger ❌"))
+    
+    subgraph Security ["Security & Privacy Deployment"]
+        Sec["End-to-End Encryption • HIPAA Ready • Role-Based Access"]
     end
+    
     SanjeevAI -.-> Sec
 ```
 
@@ -103,17 +106,17 @@ graph TD
 
 ```mermaid
 graph TD
-    subgraph "Sanjeev AI Unified Core"
-        Scan[AI Prescription Scanner] --> Merge[Multi-Doctor View]
-        Merge --> Check{AI Risk Engine}
+    subgraph Core ["Sanjeev AI Unified Core"]
+        Scan["AI Prescription Scanner"] --> Merge["Multi-Doctor View"]
+        Merge --> Check{"AI Risk Engine"}
     end
 
-    Check -->|Analyzes Medications| Int[Drug Interaction Checker]
-    Check -->|Analyzes Symptoms| Cas[Cascade Early Warning]
-    Check -->|Analyzes Mental State| Mood[Mood & Drug Correlation]
-    Check -->|Visualizes Risk Network| Map[Safety Map™]
+    Check -->|"Analyzes Medications"| Int["Drug Interaction Checker"]
+    Check -->|"Analyzes Symptoms"| Cas["Cascade Early Warning"]
+    Check -->|"Analyzes Mental State"| Mood["Mood & Drug Correlation"]
+    Check -->|"Visualizes Risk Network"| Map["Safety Map™"]
 
-    Int --> Alert[Doctor/Caregiver Real-time Alert]
+    Int --> Alert["Doctor/Caregiver Real-time Alert"]
     Cas --> Alert
     Mood --> Alert
     Map --> Alert
