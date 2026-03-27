@@ -17,6 +17,7 @@ import { renderClearScript } from './pages/clearscript.js';
 import { renderDrugInteraction } from './pages/drug-interaction.js';
 import { renderLogin } from './pages/login.js';
 import { renderProfile } from './pages/profile.js';
+import { api } from './api.js';
 
 // Expose t() globally so pages can use it
 window.__t = t;
@@ -190,19 +191,39 @@ function bindPageEvents(page) {
     // Auth Form
     const authForm = main.querySelector('#profile-auth-form');
     if (authForm) {
-      authForm.addEventListener('submit', (e) => {
+      authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        const toggleBtn = main.querySelector('#auth-mode-btn');
+        const mode = toggleBtn ? toggleBtn.dataset.mode : 'login';
+        
         const role = main.querySelector('#role-select').value;
-        const nameVal = main.querySelector('#name-input').value.trim();
+        const passkey = main.querySelector('#passkey-input').value.trim();
+        const submitBtnText = main.querySelector('#auth-submit span.btn-text');
         
-        window.__isLoggedIn = true;
-        window.__currentUserRole = role;
-        if (nameVal) {
-          window.__currentUserName = nameVal;
+        try {
+          submitBtnText.textContent = 'Authenticating...';
+          let authData;
+          
+          if (mode === 'signup') {
+             const nameVal = main.querySelector('#name-input').value.trim();
+             authData = await api.register(nameVal, role, passkey);
+          } else {
+             authData = await api.login(role, passkey);
+          }
+          
+          window.__isLoggedIn = true;
+          window.__currentUserRole = authData.user.role;
+          window.__currentUserName = authData.user.name;
+          window.__currentUserId = authData.user.id;
+          window.__currentHealthId = authData.user.healthId;
+          
+          navigate(authData.user.role === 'caregiver' ? 'caregiver' : 'home');
+
+        } catch (err) {
+          alert('Auth Error: ' + err.message);
+          submitBtnText.textContent = mode === 'signup' ? 'Sign Up' : 'Enter Hub';
         }
-        
-        // Navigate
-        navigate(role === 'caregiver' ? 'caregiver' : 'home');
       });
 
       const toggleBtn = main.querySelector('#auth-mode-btn');

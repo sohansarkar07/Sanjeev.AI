@@ -21,7 +21,7 @@ export function renderProfile(navigate) {
           <h2 class="page-title" style="margin-bottom:var(--space-1); font-size:1.75rem;">${userName}</h2>
           <div style="display:flex; align-items:center; gap:var(--space-2); color:var(--primary); font-size:0.875rem; font-weight:600; text-transform:capitalize;">
             <span class="material-symbols-outlined" style="font-size:1.25rem;">verified_user</span>
-            ${role} Account
+            ${role} • ${t('healthId')}: ${window.__currentHealthId || 'SANJ-XXXX'}
           </div>
         </div>
       </div>
