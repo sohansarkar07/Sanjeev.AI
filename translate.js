@@ -12,7 +12,7 @@ const translations = {
     navMood: 'Mood',
 
     // Home
-    greeting: 'Namaste, Rahul',
+    greeting: 'Namaste, {{name}}',
     greetingSub: 'Your path to balance begins with mindful healing today.',
     safety: 'Safety',
     medSafetyScore: 'Medication Safety Score',
@@ -235,7 +235,7 @@ const translations = {
     navScanner: 'स्कैनर',
     navTimeline: 'टाइमलाइन',
     navMood: 'मूड',
-    greeting: 'नमस्ते, राहुल',
+    greeting: 'नमस्ते, {{name}}',
     greetingSub: 'संतुलन की आपकी राह आज सचेत उपचार से शुरू होती है।',
     safety: 'सुरक्षा',
     medSafetyScore: 'दवा सुरक्षा स्कोर',
@@ -445,7 +445,7 @@ const translations = {
     navScanner: 'স্ক্যানার',
     navTimeline: 'টাইমলাইন',
     navMood: 'মেজাজ',
-    greeting: 'নমস্কার, রাহুল',
+    greeting: 'নমস্কার, {{name}}',
     greetingSub: 'ভারসাম্যের পথ আজ সচেতন নিরাময় দিয়ে শুরু হয়।',
     safety: 'নিরাপত্তা',
     medSafetyScore: 'ওষুধ নিরাপত্তা স্কোর',
@@ -655,8 +655,12 @@ const translations = {
 
 let currentLang = 'en';
 
-export function t(key) {
-  return (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key;
+export function t(key, params = {}) {
+  let str = (translations[currentLang] && translations[currentLang][key]) || translations.en[key] || key;
+  for (const [k, v] of Object.entries(params)) {
+    str = str.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), v);
+  }
+  return str;
 }
 
 export function setLanguage(lang) {

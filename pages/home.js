@@ -24,7 +24,7 @@ function renderPatientMode(navigate) {
     <!-- Hero Section -->
     <section class="home-hero">
       <div class="home-hero-text">
-        <h2 class="page-title">${t('greeting')}</h2>
+        <h2 class="page-title">${t('greeting', { name: window.__currentUserName || 'Guest' })}</h2>
         <p class="page-subtitle">${t('greetingSub')}</p>
       </div>
       <div class="safety-gauge">

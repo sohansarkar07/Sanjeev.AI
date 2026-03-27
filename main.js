@@ -155,11 +155,16 @@ function bindPageEvents(page) {
       authForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const role = main.querySelector('#role-select').value;
+        const nameVal = main.querySelector('#name-input').value.trim();
+        
         window.__isLoggedIn = true;
         window.__currentUserRole = role;
+        if (nameVal) {
+          window.__currentUserName = nameVal;
+        }
         
         // Navigate
-        navigate(role === 'caregiver' ? 'caregiver' : 'profile');
+        navigate(role === 'caregiver' ? 'caregiver' : 'home');
       });
 
       const toggleBtn = main.querySelector('#auth-mode-btn');
@@ -169,16 +174,19 @@ function bindPageEvents(page) {
           const mode = toggleBtn.dataset.mode;
           const title = main.querySelector('#auth-title');
           const submitBtn = main.querySelector('#auth-submit span.btn-text');
+          const nameContainer = main.querySelector('#name-field-container');
           
           if (mode === 'login') {
             toggleBtn.dataset.mode = 'signup';
             title.textContent = 'Create Account';
             submitBtn.textContent = 'Sign Up';
+            nameContainer.style.display = 'block';
             toggleBtn.innerHTML = 'Already have an account? <b style="color:var(--primary-fixed)">Log in</b>';
           } else {
             toggleBtn.dataset.mode = 'login';
             title.textContent = 'Sanjeev AI';
             submitBtn.textContent = 'Enter Hub';
+            nameContainer.style.display = 'none';
             toggleBtn.innerHTML = 'New here? <b style="color:var(--primary-fixed)">Sign up for free</b>';
           }
         });

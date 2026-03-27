@@ -1,6 +1,7 @@
 export function renderProfile(navigate) {
   const t = window.__t || ((key) => key);
   const isLoggedIn = window.__isLoggedIn || false;
+  const userName = window.__currentUserName || 'Guest';
 
   // 1. Logged Out State (Auth Screen)
   if (!isLoggedIn) {
@@ -19,6 +20,14 @@ export function renderProfile(navigate) {
         </div>
 
         <form id="profile-auth-form">
+          <div id="name-field-container" style="display:none; margin-bottom:var(--space-6);">
+            <label style="display:block; color:white; font-size:0.875rem; font-weight:600; margin-bottom:var(--space-2);">Full Name</label>
+            <div class="login-select-wrapper">
+              <span class="material-symbols-outlined login-select-icon">badge</span>
+              <input type="text" id="name-input" class="login-input" placeholder="Your name" />
+            </div>
+          </div>
+
           <div style="margin-bottom:var(--space-6);">
             <label style="display:block; color:white; font-size:0.875rem; font-weight:600; margin-bottom:var(--space-2);">Select Your Role</label>
             <div class="login-select-wrapper">
@@ -122,17 +131,23 @@ export function renderProfile(navigate) {
   // 2. Logged In State (Profile Hub)
   return `
   <div class="page-enter">
-    <header style="margin-bottom: var(--space-8); display:flex; align-items:center; gap:var(--space-4);">
-      <div class="brand-avatar" style="width:4rem; height:4rem; box-shadow:var(--shadow-elevated);">
-        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Rahul&backgroundColor=e6f0eb" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />
-      </div>
-      <div>
-        <h2 class="page-title" style="margin-bottom:var(--space-1); font-size:1.75rem;">Rahul S.</h2>
-        <div style="display:flex; align-items:center; gap:var(--space-2); color:var(--primary); font-size:0.875rem; font-weight:600;">
-          <span class="material-symbols-outlined" style="font-size:1.25rem;">verified_user</span>
-          ${t('healthId')}: SANJ-8X9P
+    <header style="margin-bottom: var(--space-8); display:flex; justify-content:space-between; align-items:flex-start;">
+      <div style="display:flex; align-items:center; gap:var(--space-4);">
+        <div class="brand-avatar" style="width:4rem; height:4rem; box-shadow:var(--shadow-elevated);">
+          <img src="https://api.dicebear.com/7.x/notionists/svg?seed=${userName}&backgroundColor=e6f0eb" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />
+        </div>
+        <div>
+          <h2 class="page-title" style="margin-bottom:var(--space-1); font-size:1.75rem;">${userName}</h2>
+          <div style="display:flex; align-items:center; gap:var(--space-2); color:var(--primary); font-size:0.875rem; font-weight:600;">
+            <span class="material-symbols-outlined" style="font-size:1.25rem;">verified_user</span>
+            ${t('healthId')}: SANJ-8X9P
+          </div>
         </div>
       </div>
+      <button class="btn-secondary" style="padding:var(--space-2) var(--space-4); border-radius:var(--radius-full); font-size:0.875rem;">
+        <span class="material-symbols-outlined" style="font-size:1.25rem;">edit</span>
+        Edit Profile
+      </button>
     </header>
 
     <!-- Personal Info -->
