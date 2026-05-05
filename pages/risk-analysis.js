@@ -100,8 +100,8 @@ export async function initRiskAnalysis() {
     
     // Get existing medications from DB
     const { api } = await import('../api.js');
-    const userId = localStorage.getItem('userId') || 1;
-    const existingMeds = await api.getPrescriptions(userId);
+    const userId = localStorage.getItem('userId');
+    const existingMeds = (userId && userId !== '1') ? await api.getPrescriptions(userId) : [];
     
     const allMeds = existingMeds.map(m => m.medication);
     if (medication) allMeds.push(medication);

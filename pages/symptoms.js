@@ -97,9 +97,10 @@ export function initSymptoms() {
       analyzeBtn.disabled = true;
       analyzeBtn.innerHTML = '<span class="material-symbols-outlined">sync</span> Analyzing...';
       
-      const userId = localStorage.getItem('userId') || 1;
+      const userId = localStorage.getItem('userId');
+      const finalUserId = (userId && userId !== '1') ? userId : null;
       const { api } = await import('../api.js');
-      const data = await api.analyzeSymptoms(userId, symptoms);
+      const data = await api.analyzeSymptoms(finalUserId, symptoms);
       
       resultText.innerText = data.analysis;
       resultContainer.style.display = 'block';

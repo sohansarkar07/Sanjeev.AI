@@ -137,10 +137,10 @@ export async function initHome() {
 
   try {
     const { api } = await import('../api.js');
-    const userId = localStorage.getItem('userId') || 1;
+    const userId = localStorage.getItem('userId');
     
-    // 1. Fetch Prescriptions
-    const meds = await api.getPrescriptions(userId);
+    // 1. Fetch Prescriptions (Only if logged in)
+    const meds = (userId && userId !== '1') ? await api.getPrescriptions(userId) : [];
     
     // 2. Calculate Safety Score (Live)
     let score = 100;
