@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const db = require('./db.js');
+const { User, Prescription, Mood, History, Contact } = require('./db.js');
 const crypto = require('crypto');
 const path = require('path');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -14,7 +14,7 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const JWT_SECRET = process.env.JWT_SECRET || 'sanjeev_super_secret_key_123';
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
 // Generate a random mock Health ID
@@ -25,52 +25,51 @@ function generateHealthId() {
 // ----------------------------------------------------
 // AUTHENTICATION API
 // ----------------------------------------------------
-app.post('/api/auth/register', (req, res) => {
-  const { name, role, passkey } = req.body;
-  if (!name || !role || !passkey) {
-    return res.status(400).json({ error: 'Please provide name, role, and passkey' });
-  }
-
-  const healthId = generateHealthId();
-
-  const sql = "INSERT INTO users (name, role, passkey, healthId) VALUES (?,?,?,?)";
-  const params = [name, role, passkey, healthId];
-
-  db.run(sql, params, function (err) {
-    if (err) {
-      if (err.message.includes('NOT NULL constraint')) return res.status(400).json({ error: err.message });
-      return res.status(500).json({ error: err.message });
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const { name, role, passkey } = req.body;
+    if (!name || !role || !passkey) {
+      return res.status(400).json({ error: 'Please provide name, role, and passkey' });
     }
+
+    const healthId = generateHealthId();
+    const user = await User.create({ name, role, passkey, healthId });
     
-    // Auto-create some demo medical history for new patient accounts
     if (role === 'patient') {
-      db.run("INSERT INTO medical_history (userId, title, date, description) VALUES (?,?,?,?)", 
-             [this.lastID, 'Initial Registration', new Date().toISOString().split('T')[0], 'Account created and health profile established.']);
+      await History.create({
+        userId: user._id,
+        title: 'Initial Registration',
+        date: new Date().toISOString().split('T')[0],
+        description: 'Account created and health profile established.'
+      });
     }
 
     res.json({
       message: 'User registered successfully',
-      user: { id: this.lastID, name, role, healthId }
+      user: { id: user._id, name: user.name, role: user.role, healthId: user.healthId }
     });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/api/auth/login', (req, res) => {
-  const { role, passkey } = req.body;
-  if (!role || !passkey) {
-    return res.status(400).json({ error: 'Please provide role and passkey' });
-  }
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { role, passkey } = req.body;
+    if (!role || !passkey) {
+      return res.status(400).json({ error: 'Please provide role and passkey' });
+    }
 
-  const sql = "SELECT * FROM users WHERE role = ? AND passkey = ?";
-  db.get(sql, [role, passkey], (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    if (!row) return res.status(401).json({ error: 'Invalid credentials or user not found' });
+    const user = await User.findOne({ role, passkey });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials or user not found' });
 
     res.json({
       message: 'Login successful',
-      user: { id: row.id, name: row.name, role: row.role, healthId: row.healthId }
+      user: { id: user._id, name: user.name, role: user.role, healthId: user.healthId }
     });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.post('/api/auth/google', async (req, res) => {
@@ -85,41 +84,36 @@ app.post('/api/auth/google', async (req, res) => {
     const name = payload.name;
     const assignedRole = role || 'patient';
 
-    // Check if user exists
-    db.get("SELECT * FROM users WHERE email = ?", [email], (err, row) => {
-      if (err) return res.status(500).json({ error: err.message });
+    let user = await User.findOne({ email });
+    
+    if (user) {
+      const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+      return res.json({
+        message: 'Google login successful',
+        token,
+        user: { id: user._id, name: user.name, role: user.role, email: user.email, healthId: user.healthId }
+      });
+    } else {
+      const healthId = generateHealthId();
+      user = await User.create({ name, role: assignedRole, passkey: 'GOOGLE_AUTH', healthId, email });
       
-      if (row) {
-        // User exists, generate token
-        const token = jwt.sign({ id: row.id, role: row.role }, JWT_SECRET, { expiresIn: '7d' });
-        return res.json({
-          message: 'Google login successful',
-          token,
-          user: { id: row.id, name: row.name, role: row.role, email: row.email, healthId: row.healthId }
-        });
-      } else {
-        // Create new Google user
-        const healthId = generateHealthId();
-        const sql = "INSERT INTO users (name, role, passkey, healthId, email) VALUES (?,?,?,?,?)";
-        db.run(sql, [name, assignedRole, 'GOOGLE_AUTH', healthId, email], function(err2) {
-          if (err2) return res.status(500).json({ error: err2.message });
-          
-          if (assignedRole === 'patient') {
-            db.run("INSERT INTO medical_history (userId, title, date, description) VALUES (?,?,?,?)", 
-                   [this.lastID, 'Google Auth Registration', new Date().toISOString().split('T')[0], 'Account created via Google.']);
-          }
-
-          const token = jwt.sign({ id: this.lastID, role: assignedRole }, JWT_SECRET, { expiresIn: '7d' });
-          return res.json({
-            message: 'Google registration successful',
-            token,
-            user: { id: this.lastID, name, role: assignedRole, email, healthId }
-          });
+      if (assignedRole === 'patient') {
+        await History.create({
+          userId: user._id,
+          title: 'Google Auth Registration',
+          date: new Date().toISOString().split('T')[0],
+          description: 'Account created via Google.'
         });
       }
-    });
+
+      const token = jwt.sign({ id: user._id, role: assignedRole }, JWT_SECRET, { expiresIn: '7d' });
+      return res.json({
+        message: 'Google registration successful',
+        token,
+        user: { id: user._id, name, role: assignedRole, email, healthId }
+      });
+    }
   } catch (error) {
-    console.error("Google Auth Error:", error);
     res.status(401).json({ error: 'Invalid Google credential' });
   }
 });
@@ -127,81 +121,86 @@ app.post('/api/auth/google', async (req, res) => {
 // ----------------------------------------------------
 // PROFILE DATA API
 // ----------------------------------------------------
-app.get('/api/users/:id/profile', (req, res) => {
-  const userId = req.params.id;
-  db.get("SELECT id, name, role, healthId FROM users WHERE id = ?", [userId], (err, user) => {
-    if (err) return res.status(500).json({ error: err.message });
+app.get('/api/users/:id/profile', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Fetch medical history logs for that user
-    db.all("SELECT * FROM medical_history WHERE userId = ?", [userId], (err, history) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({
-        user,
-        medicalHistory: history || []
-      });
+    const history = await History.find({ userId: user._id });
+    res.json({
+      user: { id: user._id, name: user.name, role: user.role, healthId: user.healthId },
+      medicalHistory: history || []
     });
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ----------------------------------------------------
 // CONTACTS API
 // ----------------------------------------------------
-app.get('/api/users/:id/contacts', (req, res) => {
-  const userId = req.params.id;
-  db.all("SELECT * FROM emergency_contacts WHERE userId = ?", [userId], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows || []);
-  });
+app.get('/api/users/:id/contacts', async (req, res) => {
+  try {
+    const rows = await Contact.find({ userId: req.params.id });
+    res.json(rows.map(r => ({ ...r._doc, id: r._id })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/api/users/:id/contacts', (req, res) => {
-  const userId = req.params.id;
-  const { name, relation, phone, isSOS } = req.body;
-  if (!name || !phone) return res.status(400).json({ error: 'Name and phone required' });
-  
-  const sql = "INSERT INTO emergency_contacts (userId, name, relation, phone, isSOS) VALUES (?,?,?,?,?)";
-  db.run(sql, [userId, name, relation, phone, isSOS ? 1 : 0], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ id: this.lastID, userId, name, relation, phone, isSOS: isSOS ? 1 : 0 });
-  });
+app.post('/api/users/:id/contacts', async (req, res) => {
+  try {
+    const { name, relation, phone, isSOS } = req.body;
+    if (!name || !phone) return res.status(400).json({ error: 'Name and phone required' });
+    
+    const contact = await Contact.create({ userId: req.params.id, name, relation, phone, isSOS });
+    res.json({ ...contact._doc, id: contact._id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ----------------------------------------------------
 // INTEGRATIONS API
 // ----------------------------------------------------
 // PRESCRIPTIONS
-app.get('/api/users/:id/prescriptions', (req, res) => {
-  db.all("SELECT * FROM prescriptions WHERE userId = ?", [req.params.id], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows || []);
-  });
+app.get('/api/users/:id/prescriptions', async (req, res) => {
+  try {
+    const rows = await Prescription.find({ userId: req.params.id });
+    res.json(rows.map(r => ({ ...r._doc, id: r._id })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/api/users/:id/prescriptions', (req, res) => {
-  const { doctorName, medication, dosage, instructions, date } = req.body;
-  const sql = "INSERT INTO prescriptions (userId, doctorName, medication, dosage, instructions, date) VALUES (?,?,?,?,?,?)";
-  db.run(sql, [req.params.id, doctorName, medication, dosage, instructions, date], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ id: this.lastID, userId: req.params.id, doctorName, medication, dosage, instructions, date });
-  });
+app.post('/api/users/:id/prescriptions', async (req, res) => {
+  try {
+    const { doctorName, medication, dosage, instructions, date } = req.body;
+    const prescription = await Prescription.create({ userId: req.params.id, doctorName, medication, dosage, instructions, date });
+    res.json({ ...prescription._doc, id: prescription._id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // MOOD LOGS
-app.get('/api/users/:id/moods', (req, res) => {
-  db.all("SELECT * FROM mood_logs WHERE userId = ? ORDER BY date DESC", [req.params.id], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows || []);
-  });
+app.get('/api/users/:id/moods', async (req, res) => {
+  try {
+    const rows = await Mood.find({ userId: req.params.id }).sort({ date: -1 });
+    res.json(rows.map(r => ({ ...r._doc, id: r._id })));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.post('/api/users/:id/moods', (req, res) => {
-  const { moodLevel, notes, date } = req.body;
-  const sql = "INSERT INTO mood_logs (userId, moodLevel, notes, date) VALUES (?,?,?,?)";
-  db.run(sql, [req.params.id, moodLevel, notes, date], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ id: this.lastID, userId: req.params.id, moodLevel, notes, date });
-  });
+app.post('/api/users/:id/moods', async (req, res) => {
+  try {
+    const { moodLevel, notes, date } = req.body;
+    const mood = await Mood.create({ userId: req.params.id, moodLevel, notes, date });
+    res.json({ ...mood._doc, id: mood._id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // CLEARSCRIPT AI SCANNER (Powered by Gemini)
@@ -235,7 +234,6 @@ app.post('/api/scan-prescription', async (req, res) => {
     
     res.json(parsedData);
   } catch (err) {
-    console.error('Gemini Scanner Error:', err);
     res.status(500).json({ error: 'Gemini AI Error: ' + err.message });
   }
 });
@@ -251,29 +249,18 @@ app.post('/api/check-interactions', async (req, res) => {
     const model = genAI.getGenerativeModel({ model: "models/gemini-flash-latest" });
     
     const prompt = `You are an expert clinical pharmacologist AI. Analyze the following list of medications for potential interactions and "prescription cascades".
-    A prescription cascade is when a side effect of one drug is misinterpreted as a new symptom, leading to the prescription of a second drug.
-    Medications to check: ${medications.join(', ')}
-    
-    If there is a significant interaction or cascade risk, return ONLY a valid JSON object formatted exactly like this:
-    {
-      "hasInteraction": true,
-      "cascade": true,
-      "severity": "High",
-      "message": "Detailed explanation of the interaction."
-    }
-    If no significant risk exists, return exactly: { "hasInteraction": false }
-    Do not include any Markdown formatting or extra text outside the JSON.`;
+    Medications: ${medications.join(', ')}
+    Return ONLY a valid JSON object:
+    { "hasInteraction": true, "cascade": true, "severity": "High", "message": "explanation" }
+    If none, { "hasInteraction": false }`;
     
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error("AI did not return valid JSON: " + responseText);
-    const parsedData = JSON.parse(jsonMatch[0]);
-    
-    res.json(parsedData);
+    res.json(JSON.parse(jsonMatch[0]));
   } catch (err) {
-    console.error('Gemini Interaction Error:', err);
-    res.status(500).json({ error: 'Gemini AI Interaction Error: ' + err.message });
+    res.status(500).json({ error: 'Gemini AI Error: ' + err.message });
   }
 });
 
@@ -281,32 +268,16 @@ app.post('/api/check-interactions', async (req, res) => {
 app.post('/api/analyze-symptoms', async (req, res) => {
   try {
     const { symptoms, userId } = req.body;
+    const meds = await Prescription.find({ userId });
+    const medList = meds.length > 0 ? meds.map(m => m.medication).join(', ') : "None";
     
-    // Fetch user's current medications
-    db.all("SELECT * FROM prescriptions WHERE userId = ?", [userId], async (err, meds) => {
-      if (err) return res.status(500).json({ error: 'Database error: ' + err.message });
-      
-      const medList = meds.length > 0 ? meds.map(m => m.medication).join(', ') : "No active medications found in profile.";
-      const model = genAI.getGenerativeModel({ model: "models/gemini-flash-latest" });
-      
-      const prompt = `You are a medical AI assistant.
-      Patient Symptoms: "${symptoms}"
-      Current Medications: ${medList}
-      
-      Check if any reported symptoms are common side effects of the listed medications.
-      Return a concise, helpful response (max 3 sentences). 
-      If a match is found, start with "Drug Correlation Found:". 
-      If no match, say "No direct medication correlation found, but please monitor closely."`;
-      
-      try {
-        const result = await model.generateContent(prompt);
-        res.json({ analysis: result.response.text() });
-      } catch (aiErr) {
-        res.status(500).json({ error: 'Gemini Analysis Error: ' + aiErr.message });
-      }
-    });
+    const model = genAI.getGenerativeModel({ model: "models/gemini-flash-latest" });
+    const prompt = `Patient Symptoms: "${symptoms}". Medications: ${medList}. Check for correlations. Max 3 sentences.`;
+    
+    const result = await model.generateContent(prompt);
+    res.json({ analysis: result.response.text() });
   } catch (err) {
-    res.status(500).json({ error: 'Server Error: ' + err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -316,8 +287,12 @@ app.get(/^.*$/, (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
-// Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log('Sanjeev AI Backend Server running on port', PORT);
-});
+// Start Server (Only locally)
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log('Sanjeev AI Backend Server running on port', PORT);
+  });
+}
+
+module.exports = app;

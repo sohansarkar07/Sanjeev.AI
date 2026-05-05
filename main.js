@@ -3,7 +3,7 @@
 // ============================
 
 import { t, setLanguage, getLanguage } from './translate.js';
-import { renderHome } from './pages/home.js';
+import { renderHome, initHome } from './pages/home.js';
 import { renderScanner } from './pages/scanner.js';
 import { renderTimeline } from './pages/timeline.js';
 import { renderMood } from './pages/mood.js';
@@ -149,6 +149,7 @@ function bindPageEvents(page) {
 
   // Home page
   if (page === 'home') {
+    initHome();
     main.querySelector('#action-scan')?.addEventListener('click', () => navigate('scanner'));
     main.querySelector('#action-mood')?.addEventListener('click', () => navigate('mood'));
     main.querySelector('#action-alerts')?.addEventListener('click', () => navigate('alert'));

@@ -1,86 +1,64 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const mongoose = require('mongoose');
 
-const DBSOURCE = path.join(__dirname, 'db.sqlite');
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sanjeev-ai';
 
-const db = new sqlite3.Database(DBSOURCE, (err) => {
-  if (err) {
-    console.error('Error opening database:', err.message);
-    throw err;
-  } else {
-    console.log('Connected to the SQLite database.');
-    
-    // Create Users Table
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      role TEXT NOT NULL,
-      passkey TEXT NOT NULL,
-      healthId TEXT UNIQUE
-    )`, (err) => {
-      if (err) console.error('Error creating users table', err);
-      else {
-        // Add email column for Google Auth if it doesn't exist
-        db.run(`ALTER TABLE users ADD COLUMN email TEXT`, (alterErr) => {
-          if (alterErr && !alterErr.message.includes('duplicate column')) {
-            console.error('Error adding email column:', alterErr.message);
-          }
-        });
-      }
-    });
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-    // Create Medical History Table
-    db.run(`CREATE TABLE IF NOT EXISTS medical_history (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userId INTEGER,
-      title TEXT,
-      date TEXT,
-      description TEXT,
-      FOREIGN KEY (userId) REFERENCES users(id)
-    )`, (err) => {
-      if (err) console.error('Error creating medical_history table', err);
-    });
-
-    // Create Prescriptions Table
-    db.run(`CREATE TABLE IF NOT EXISTS prescriptions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userId INTEGER,
-      doctorName TEXT,
-      medication TEXT,
-      dosage TEXT,
-      instructions TEXT,
-      date TEXT,
-      FOREIGN KEY (userId) REFERENCES users(id)
-    )`, (err) => {
-      if (err) console.error('Error creating prescriptions table', err);
-    });
-
-    // Create Emergency Contacts Table
-    db.run(`CREATE TABLE IF NOT EXISTS emergency_contacts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userId INTEGER,
-      name TEXT,
-      relation TEXT,
-      phone TEXT,
-      isSOS BOOLEAN DEFAULT 0,
-      FOREIGN KEY (userId) REFERENCES users(id)
-    )`, (err) => {
-      if (err) console.error('Error creating emergency_contacts table', err);
-    });
-
-    // Create Mood Logs Table
-    db.run(`CREATE TABLE IF NOT EXISTS mood_logs (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userId INTEGER,
-      moodLevel INTEGER,
-      notes TEXT,
-      date TEXT,
-      FOREIGN KEY (userId) REFERENCES users(id)
-    )`, (err) => {
-      if (err) console.error('Error creating mood_logs table', err);
-    });
-
-  }
+// --- User Schema ---
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  role: { type: String, enum: ['patient', 'caregiver', 'pharmacist', 'doctor'], default: 'patient' },
+  passkey: { type: String, required: true },
+  healthId: { type: String, unique: true },
+  createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = db;
+// --- Prescription Schema ---
+const prescriptionSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  medication: { type: String, required: true },
+  dosage: String,
+  instructions: String,
+  date: { type: String, default: () => new Date().toISOString().split('T')[0] }
+});
+
+// --- Mood Schema ---
+const moodSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  moodLevel: { type: Number, required: true, min: 1, max: 5 },
+  notes: String,
+  date: { type: String, default: () => new Date().toISOString() }
+});
+
+// --- Medical History Schema ---
+const historySchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  title: String,
+  date: String,
+  description: String
+});
+
+// --- Contacts Schema ---
+const contactSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  name: String,
+  relation: String,
+  phone: String,
+  isSOS: { type: Boolean, default: false }
+});
+
+const User = mongoose.model('User', userSchema);
+const Prescription = mongoose.model('Prescription', prescriptionSchema);
+const Mood = mongoose.model('Mood', moodSchema);
+const History = mongoose.model('History', historySchema);
+const Contact = mongoose.model('Contact', contactSchema);
+
+module.exports = {
+  User,
+  Prescription,
+  Mood,
+  History,
+  Contact
+};

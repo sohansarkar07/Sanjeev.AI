@@ -13,8 +13,6 @@ export function renderHome(navigate) {
 function renderPatientMode(navigate) {
   const t = window.__t || ((key) => key);
   const circumference = 2 * Math.PI * 58;
-  const score = 85;
-  const offset = circumference * (1 - score / 100);
 
   return `
   <div class="page-enter">
@@ -28,17 +26,17 @@ function renderPatientMode(navigate) {
            EMERGENCY SOS
         </button>
       </div>
-      <div class="safety-gauge">
+      <div class="safety-gauge" id="home-safety-gauge">
         <div class="deco">
           <span class="material-symbols-outlined">shield_with_heart</span>
         </div>
         <div style="position:relative; width:8rem; height:8rem; display:flex; align-items:center; justify-content:center;">
           <svg class="gauge-svg" viewBox="0 0 128 128">
             <circle class="gauge-bg" cx="64" cy="64" r="58" />
-            <circle class="gauge-fill" cx="64" cy="64" r="58" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" />
+            <circle id="gauge-fill" class="gauge-fill" cx="64" cy="64" r="58" stroke-dasharray="${circumference}" stroke-dashoffset="${circumference}" />
           </svg>
           <div class="gauge-center">
-            <span class="gauge-value">${score}</span>
+            <span id="gauge-value" class="gauge-value">--</span>
             <span class="gauge-label">${t('safety')}</span>
           </div>
         </div>
@@ -73,25 +71,20 @@ function renderPatientMode(navigate) {
     </section>
 
     <!-- Next Dose -->
-    <section class="next-dose">
+    <section class="next-dose" id="next-dose-container">
       <div class="next-dose-info">
         <div class="next-dose-icon">
           <span class="material-symbols-outlined">pill</span>
         </div>
-        <div>
+        <div id="next-dose-details">
           <span class="label-caps">${t('yourNextDose')}</span>
-          <h3 class="next-dose-name">Metformin (500mg)</h3>
+          <h3 class="next-dose-name">Loading...</h3>
           <div class="next-dose-meta">
-            <span class="chip">
-              <span class="material-symbols-outlined" style="font-size:1.125rem">schedule</span> 08:30 AM
-            </span>
-            <span class="chip" style="background:var(--secondary-container)">
-              <span class="material-symbols-outlined" style="font-size:1.125rem">water_drop</span> ${t('withWarmWater')}
-            </span>
+            <span class="chip">---</span>
           </div>
         </div>
       </div>
-      <button class="btn-primary" style="box-shadow: 0 8px 24px rgba(1,45,29,0.1);">${t('markAsTaken')}</button>
+      <button class="btn-primary" id="take-dose-btn" style="box-shadow: 0 8px 24px rgba(1,45,29,0.1);">${t('markAsTaken')}</button>
     </section>
 
     <!-- Essential Tools Grid -->
@@ -132,6 +125,66 @@ function renderPatientMode(navigate) {
     </section>
   </div>
   `;
+}
+
+export async function initHome() {
+  const gaugeValue = document.getElementById('gauge-value');
+  const gaugeFill = document.getElementById('gauge-fill');
+  const nextDoseDetails = document.getElementById('next-dose-details');
+  const takeDoseBtn = document.getElementById('take-dose-btn');
+  
+  if (!gaugeValue) return;
+
+  try {
+    const { api } = await import('../api.js');
+    const userId = localStorage.getItem('userId') || 1;
+    
+    // 1. Fetch Prescriptions
+    const meds = await api.getPrescriptions(userId);
+    
+    // 2. Calculate Safety Score (Live)
+    let score = 100;
+    if (meds.length > 0) {
+      const medNames = meds.map(m => m.medication);
+      const interaction = await api.checkInteractions(medNames);
+      if (interaction.hasInteraction) score = 65; // High risk
+      else if (meds.length > 3) score = 90; // Polypharmacy caution
+      else score = 98;
+    }
+
+    // Update Gauge
+    const circumference = 2 * Math.PI * 58;
+    const offset = circumference * (1 - score / 100);
+    gaugeValue.innerText = score;
+    gaugeFill.style.strokeDashoffset = offset;
+    if (score < 70) gaugeFill.style.stroke = 'var(--error)';
+
+    // 3. Update Next Dose
+    if (meds.length > 0) {
+      const next = meds[0];
+      nextDoseDetails.innerHTML = `
+        <span class="label-caps">${window.__t('yourNextDose')}</span>
+        <h3 class="next-dose-name">${next.medication} (${next.dosage})</h3>
+        <div class="next-dose-meta">
+          <span class="chip">
+            <span class="material-symbols-outlined" style="font-size:1.125rem">schedule</span> 08:30 AM
+          </span>
+          <span class="chip" style="background:var(--secondary-container)">
+            <span class="material-symbols-outlined" style="font-size:1.125rem">water_drop</span> ${next.instructions}
+          </span>
+        </div>
+      `;
+    } else {
+      nextDoseDetails.innerHTML = `
+        <h3 class="next-dose-name">No meds scheduled</h3>
+        <p style="font-size:0.875rem; color:var(--on-surface-variant);">Scan a prescription to start tracking.</p>
+      `;
+      if (takeDoseBtn) takeDoseBtn.style.display = 'none';
+    }
+
+  } catch (err) {
+    console.error('Home Init Error:', err);
+  }
 }
 
 // ----------------------------------------------------
