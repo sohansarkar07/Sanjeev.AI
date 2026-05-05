@@ -207,7 +207,7 @@ app.post('/api/users/:id/moods', async (req, res) => {
 app.post('/api/scan-prescription', async (req, res) => {
   try {
     const { rawText, image } = req.body;
-    const model = genAI.getGenerativeModel({ model: "models/gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const prompt = `You are an expert AI prescription scanner. Analyze the provided text or handwriting of a doctor's prescription. 
     Extract the medication name, dosage, instructions, and doctor's name if possible. 
@@ -246,7 +246,7 @@ app.post('/api/check-interactions', async (req, res) => {
       return res.json({ hasInteraction: false });
     }
 
-    const model = genAI.getGenerativeModel({ model: "models/gemini-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const prompt = `You are an expert clinical pharmacologist AI. Analyze the following list of medications for potential interactions and "prescription cascades".
     Medications: ${medications.join(', ')}
