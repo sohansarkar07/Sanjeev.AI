@@ -19,11 +19,19 @@ export function renderScanner(navigate) {
     </div>
 
     <div style="margin-top:var(--space-8); display:flex; flex-direction:column; gap:var(--space-4); position:relative; z-index:10;">
-      <button class="btn-primary" id="scanner-capture" style="justify-content:center; padding:16px;" onclick="
-        const text = document.getElementById('scanner-input') ? document.getElementById('scanner-input').value : 'Rx Metformin 500mg';
-        sessionStorage.setItem('scanText', text || 'Rx Metformin 500mg');
-        window.navigate('clearscript');
+      <input type="file" id="camera-capture-input" accept="image/*" capture="environment" style="display:none;" onchange="
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            window.showToast('Prescription Captured! Analyzing...');
+            sessionStorage.setItem('scanImage', e.target.result.split(',')[1]);
+            sessionStorage.removeItem('scanText');
+            setTimeout(() => window.navigate('clearscript'), 800);
+          };
+          reader.readAsDataURL(this.files[0]);
+        }
       ">
+      <button class="btn-primary" id="scanner-capture" style="justify-content:center; padding:16px;" onclick="document.getElementById('camera-capture-input').click()">
         <span class="material-symbols-outlined">camera</span> ${t('captureBtn')}
       </button>
       <input type="file" id="gallery-upload-input" accept="image/*" style="display:none;" onchange="
