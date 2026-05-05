@@ -1,6 +1,81 @@
 // ClearScript Validation
+import { api } from '../api.js';
+
 export function renderClearScript(navigate) {
   const t = window.__t;
+
+  // Simulate scanning when page loads
+  setTimeout(async () => {
+    const container = document.getElementById('clearscript-results');
+    if (!container) return;
+    
+    const rawText = sessionStorage.getItem('scanText');
+    const image = sessionStorage.getItem('scanImage');
+
+    try {
+      container.innerHTML = `
+        <div style="text-align:center; padding:var(--space-8);">
+          <span class="material-symbols-outlined" style="font-size:3rem; color:var(--primary); animation: pulse 1.5s infinite;">document_scanner</span>
+          <p style="margin-top:var(--space-4); color:var(--on-surface-variant); font-weight:600;">Gemini AI is analyzing ${image ? 'your image' : 'text'}...</p>
+        </div>
+      `;
+      
+      const data = await api.scanPrescription(rawText, image);
+      sessionStorage.setItem('lastScan', JSON.stringify(data));
+      
+      let confidenceColor = '#2E7D32';
+      let confidenceBg = '#E8F5E9';
+      let confidenceStatus = t('autoAccepted') || 'Auto-Accepted Processing';
+      let actionHtml = '';
+
+      if (data.confidence < 90 && data.confidence >= 60) { 
+        confidenceColor = '#E65100'; 
+        confidenceBg = '#FFF3E0'; 
+        confidenceStatus = 'Requires Manual Confirmation';
+        actionHtml = `
+          <div style="margin-top:16px; display:flex; gap:8px;">
+            <button class="btn-primary" style="flex:1; justify-content:center; padding:10px;" onclick="window.showToast('Confirmation saved!')">Confirm</button>
+            <button class="btn-secondary" style="flex:1; justify-content:center; padding:10px;" onclick="window.showToast('Edit mode activated')">Edit</button>
+          </div>
+        `;
+      } else if (data.confidence < 60) { 
+        confidenceColor = '#C62828'; 
+        confidenceBg = '#FFEBEE'; 
+        confidenceStatus = 'Manual Fallback Required';
+        actionHtml = `
+          <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
+            <input type="text" value="${data.medication}" style="padding:10px; border-radius:8px; border:1px solid var(--outline-variant); width:100%; font-family:inherit;">
+            <input type="text" value="${data.dosage} • ${data.instructions}" style="padding:10px; border-radius:8px; border:1px solid var(--outline-variant); width:100%; font-family:inherit;">
+            <button class="btn-primary" style="width:100%; justify-content:center; padding:12px;" onclick="window.showToast('Manual entry saved!')">Save Fallback</button>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="ocr-layer">
+          <div class="ocr-layer-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="chip" style="background:${confidenceBg}; color:${confidenceColor}; font-weight:700;">&gt;${data.confidence}% Match</span>
+            <span class="material-symbols-outlined" style="color:${confidenceColor};">check_circle</span>
+          </div>
+          <p class="ocr-layer-desc" style="margin-bottom:var(--space-2); color:var(--on-surface-variant); font-weight:600;">${confidenceStatus}</p>
+          <div class="ocr-extracted-text">
+            <h4>${data.medication}</h4>
+            <span class="label-caps">${data.dosage} • ${data.instructions}</span>
+            <p style="margin-top:8px; font-size:0.75rem; color:var(--on-surface-variant);">Prescribed by: ${data.doctorName}</p>
+          </div>
+          ${actionHtml}
+        </div>
+      `;
+    } catch (err) {
+      container.innerHTML = `
+        <div style="padding:var(--space-4); color:var(--error); text-align:center;">
+          <span class="material-symbols-outlined">error</span>
+          <p style="font-weight:700; margin-top:8px;">Scan Error</p>
+          <p style="font-size:0.875rem;">${err.message}</p>
+        </div>
+      `;
+    }
+  }, 100);
 
   return `
   <div class="page-enter">
@@ -10,39 +85,8 @@ export function renderClearScript(navigate) {
     </header>
 
     <div class="clearscript-container">
-      <div class="ocr-layers card-white" style="margin-bottom:var(--space-6);">
-        <div class="ocr-layer">
-          <div class="ocr-layer-header" style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="chip" style="background:#E8F5E9; color:#2E7D32;">&gt;90% Match</span>
-            <span class="material-symbols-outlined" style="color:#2E7D32;">check_circle</span>
-          </div>
-          <p class="ocr-layer-desc">${t('autoAccepted')}</p>
-          <div class="ocr-extracted-text">
-            <h4>Metformin</h4>
-            <span class="label-caps">500mg • Twice Daily</span>
-          </div>
-        </div>
-
-        <div class="ocr-layer" style="margin-top:var(--space-4); border-top:1px dashed var(--outline-variant); padding-top:var(--space-4);">
-          <div class="ocr-layer-header" style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="chip" style="background:#FFF3E0; color:#E65100;">60-90% Match</span>
-            <span class="material-symbols-outlined" style="color:#E65100;">warning</span>
-          </div>
-          <p class="ocr-layer-desc" style="color:var(--on-surface-variant); font-size:0.875rem;">${t('aiSuggestion')} <strong>Sertraline</strong> (instead of 'Sertra')</p>
-          <div style="display:flex; gap:var(--space-2); margin-top:var(--space-2);">
-            <button class="btn-primary" style="padding:6px 12px; font-size:0.75rem;">${t('confirm')}</button>
-            <button class="btn-secondary" style="padding:6px 12px; font-size:0.75rem;">${t('edit')}</button>
-          </div>
-        </div>
-
-        <div class="ocr-layer" style="margin-top:var(--space-4); border-top:1px dashed var(--outline-variant); padding-top:var(--space-4);">
-          <div class="ocr-layer-header" style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="chip" style="background:#FFEBEE; color:#C62828;">&lt;60% Match</span>
-            <span class="material-symbols-outlined" style="color:#C62828;">error</span>
-          </div>
-          <p class="ocr-layer-desc" style="color:#C62828; font-size:0.875rem;">${t('manualFallback')}</p>
-          <input type="text" placeholder="Type medicine name clearly" class="manual-input" style="width:100%; padding:10px; margin-top:8px; border:1px solid #FFCDD2; border-radius:4px;" />
-        </div>
+      <div id="clearscript-results" class="ocr-layers card-white" style="margin-bottom:var(--space-6); min-height: 200px;">
+        <!-- Dynamic content injected here -->
       </div>
 
       <button id="clearscript-confirm" class="btn-primary" style="width:100%; justify-content:center; padding:16px;">

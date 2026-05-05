@@ -39,12 +39,11 @@ export function renderMood(navigate) {
       </div>
     </section>
 
-    <!-- Voice Note -->
-    <section class="mood-voice-section">
-      <button class="btn-tertiary-warm" style="font-size:1rem; padding: var(--space-4) var(--space-8);">
-        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">mic</span>
-        ${t('addVoiceNote')}
-      </button>
+    <!-- Notes & Save -->
+    <section style="padding: 0 var(--space-4); margin-bottom: var(--space-8); display:flex; flex-direction:column; gap: var(--space-4); align-items:center;">
+      <textarea id="mood-notes" placeholder="Type any side effects or notes for today..." style="width:100%; max-width:400px; height:80px; padding:12px; border-radius:8px; border:1px solid var(--outline-variant); resize:none; font-family:inherit;"></textarea>
+      <button id="save-mood-btn" class="btn-primary" style="width:100%; max-width:400px; justify-content:center; padding:12px;">Save Daily Mood</button>
+      <div id="mood-feedback" style="text-align:center; color:var(--primary); font-weight:600; font-size:0.875rem;"></div>
     </section>
 
     <!-- Graph -->

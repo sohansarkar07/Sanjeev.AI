@@ -37,6 +37,22 @@ export const api = {
     }
   },
 
+  googleLogin: async (credential, role) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential, role })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [googleLogin]:', err);
+      throw err;
+    }
+  },
+
   // Profile Data Fetching
   getProfile: async (userId) => {
     try {
@@ -75,6 +91,113 @@ export const api = {
       return data;
     } catch (err) {
       console.error('API Error [addContact]:', err);
+      throw err;
+    }
+  },
+
+  // Prescriptions
+  getPrescriptions: async (userId) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/users/${userId}/prescriptions`);
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [getPrescriptions]:', err);
+      throw err;
+    }
+  },
+
+  addPrescription: async (userId, prescriptionData) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/users/${userId}/prescriptions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prescriptionData)
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [addPrescription]:', err);
+      throw err;
+    }
+  },
+
+  // Mood Logs
+  getMoods: async (userId) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/users/${userId}/moods`);
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [getMoods]:', err);
+      throw err;
+    }
+  },
+
+  addMood: async (userId, moodData) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/users/${userId}/moods`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(moodData)
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [addMood]:', err);
+      throw err;
+    }
+  },
+
+  // Scanner & Interactions
+  scanPrescription: async (rawText, image) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/scan-prescription`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rawText, image })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [scanPrescription]:', err);
+      throw err;
+    }
+  },
+
+  checkInteractions: async (medications) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/check-interactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ medications })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [checkInteractions]:', err);
+      throw err;
+    }
+  },
+
+  analyzeSymptoms: async (userId, symptoms) => {
+    try {
+      const resp = await fetch(`${BASE_URL}/analyze-symptoms`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, symptoms })
+      });
+      const data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Server Error');
+      return data;
+    } catch (err) {
+      console.error('API Error [analyzeSymptoms]:', err);
       throw err;
     }
   }

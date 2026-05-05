@@ -19,6 +19,14 @@ const db = new sqlite3.Database(DBSOURCE, (err) => {
       healthId TEXT UNIQUE
     )`, (err) => {
       if (err) console.error('Error creating users table', err);
+      else {
+        // Add email column for Google Auth if it doesn't exist
+        db.run(`ALTER TABLE users ADD COLUMN email TEXT`, (alterErr) => {
+          if (alterErr && !alterErr.message.includes('duplicate column')) {
+            console.error('Error adding email column:', alterErr.message);
+          }
+        });
+      }
     });
 
     // Create Medical History Table
@@ -58,6 +66,18 @@ const db = new sqlite3.Database(DBSOURCE, (err) => {
       FOREIGN KEY (userId) REFERENCES users(id)
     )`, (err) => {
       if (err) console.error('Error creating emergency_contacts table', err);
+    });
+
+    // Create Mood Logs Table
+    db.run(`CREATE TABLE IF NOT EXISTS mood_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER,
+      moodLevel INTEGER,
+      notes TEXT,
+      date TEXT,
+      FOREIGN KEY (userId) REFERENCES users(id)
+    )`, (err) => {
+      if (err) console.error('Error creating mood_logs table', err);
     });
 
   }

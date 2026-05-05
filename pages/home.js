@@ -1,10 +1,7 @@
 // Home Dashboard with Role-Based Rendering
 export function renderHome(navigate) {
   const role = window.__currentUserRole || 'patient';
-
-  if (role === 'doctor') return renderDoctorMode(navigate);
   if (role === 'pharmacist') return renderPharmacistMode(navigate);
-  if (role === 'hospital') return renderHospitalMode(navigate);
   
   // Default 'patient' mode
   return renderPatientMode(navigate);

@@ -20,10 +20,8 @@ export function renderLogin(navigate) {
             <span class="material-symbols-outlined login-select-icon">person</span>
             <select id="role-select" class="login-input">
               <option value="patient">Patient</option>
-              <option value="doctor">Doctor</option>
               <option value="caregiver">Caregiver</option>
               <option value="pharmacist">Pharmacist</option>
-              <option value="hospital">Hospital / Clinic</option>
             </select>
           </div>
         </div>

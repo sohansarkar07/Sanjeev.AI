@@ -249,10 +249,8 @@ function renderAuthScreen(t) {
               <span class="material-symbols-outlined login-select-icon">person</span>
               <select id="role-select" class="login-input">
                 <option value="patient">Patient</option>
-                <option value="doctor">Doctor</option>
                 <option value="caregiver">Caregiver</option>
                 <option value="pharmacist">Pharmacist</option>
-                <option value="hospital">Hospital / Clinic</option>
               </select>
             </div>
           </div>
@@ -270,6 +268,14 @@ function renderAuthScreen(t) {
             <span class="material-symbols-outlined">arrow_forward</span>
           </button>
         </form>
+        
+        <div style="margin: var(--space-4) 0; display:flex; align-items:center; color:white; font-size:0.875rem;">
+          <div style="flex:1; height:1px; background:rgba(255,255,255,0.2);"></div>
+          <span style="padding:0 var(--space-2);">or</span>
+          <div style="flex:1; height:1px; background:rgba(255,255,255,0.2);"></div>
+        </div>
+
+        <div id="google-signin-btn" style="display:flex; justify-content:center; margin-bottom:var(--space-6);"></div>
         
         <div style="text-align:center; margin-top:var(--space-6);">
           <a href="#" id="auth-mode-btn" data-mode="login" style="color:white; font-size:0.875rem; text-decoration:none;">
