@@ -404,3 +404,63 @@ function renderAuthScreen(t) {
     </style>
   `;
 }
+
+// ── Profile Init (called after render) ──
+export function initProfile(navigate) {
+  // ── Name Edit ──
+  const editNameBtn = document.getElementById('edit-profile-header-btn');
+  const nameEditForm = document.getElementById('name-edit-form');
+  const cancelNameBtn = document.getElementById('cancel-profile-name-btn');
+  const saveNameBtn = document.getElementById('save-profile-name-btn');
+
+  if (editNameBtn && nameEditForm) {
+    editNameBtn.addEventListener('click', () => {
+      const isHidden = nameEditForm.style.display === 'none' || !nameEditForm.style.display;
+      nameEditForm.style.display = isHidden ? 'block' : 'none';
+      if (isHidden) document.getElementById('input-profile-name')?.focus();
+    });
+  }
+  cancelNameBtn?.addEventListener('click', () => {
+    if (nameEditForm) nameEditForm.style.display = 'none';
+  });
+  saveNameBtn?.addEventListener('click', () => {
+    const newName = document.getElementById('input-profile-name')?.value?.trim();
+    if (!newName) return window.showToast('Please enter a name');
+    localStorage.setItem('profile_name', newName);
+    window.__currentUserName = newName;
+    const displayEl = document.getElementById('profile-display-name');
+    if (displayEl) displayEl.textContent = newName;
+    const avatarEl = document.getElementById('profile-avatar-img');
+    if (avatarEl) avatarEl.src = `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(newName)}&backgroundColor=e6f0eb`;
+    if (nameEditForm) nameEditForm.style.display = 'none';
+    window.showToast('Name updated!');
+  });
+
+  // ── Personal Info Edit ──
+  const editInfoBtn = document.getElementById('edit-personal-info-btn');
+  const infoModal = document.getElementById('personal-info-modal');
+  editInfoBtn?.addEventListener('click', () => {
+    if (infoModal) infoModal.style.display = infoModal.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('save-personal-info-btn')?.addEventListener('click', () => {
+    const age = document.getElementById('input-age')?.value;
+    const blood = document.getElementById('input-blood')?.value;
+    const weight = document.getElementById('input-weight')?.value;
+    if (age) { localStorage.setItem('profile_age', age); const el = document.getElementById('display-age'); if (el) el.textContent = age; }
+    if (blood) { localStorage.setItem('profile_blood', blood); const el = document.getElementById('display-blood'); if (el) el.textContent = blood; }
+    if (weight) { localStorage.setItem('profile_weight', weight + ' kg'); const el = document.getElementById('display-weight'); if (el) el.textContent = weight + ' kg'; }
+    if (infoModal) infoModal.style.display = 'none';
+    window.showToast('Personal info saved!');
+  });
+
+  // ── Logout ──
+  document.getElementById('profile-logout-btn')?.addEventListener('click', () => {
+    window.__isLoggedIn = false;
+    window.__currentUserRole = 'patient';
+    window.__currentContacts = [];
+    localStorage.removeItem('sanjeev_token');
+    localStorage.removeItem('userId');
+    window.showToast('Logged out safely');
+    navigate('profile');
+  });
+}

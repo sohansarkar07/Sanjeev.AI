@@ -16,7 +16,7 @@ import { renderReport } from './pages/report.js';
 import { renderClearScript } from './pages/clearscript.js';
 import { renderDrugInteraction } from './pages/drug-interaction.js';
 import { renderLogin } from './pages/login.js';
-import { renderProfile } from './pages/profile.js';
+import { renderProfile, initProfile } from './pages/profile.js';
 import { api } from './api.js';
 
 // Expose t() globally so pages can use it
@@ -287,67 +287,9 @@ function bindPageEvents(page) {
     }
   }
 
-  // --- Specific Missing Bindings ---
+  // --- Profile (name/info/logout) ---
   if (page === 'profile') {
-    main.querySelector('#profile-logout-btn')?.addEventListener('click', () => {
-      window.__isLoggedIn = false;
-      localStorage.removeItem('sanjeev_token');
-      window.showToast("Logged out safely");
-      navigate('login');
-    });
-
-    // Name Edit/Save/Cancel
-    const editNameBtn = main.querySelector('#edit-profile-header-btn');
-    const nameEditForm = main.querySelector('#name-edit-form');
-    const cancelNameBtn = main.querySelector('#cancel-profile-name-btn');
-    if (editNameBtn && nameEditForm) {
-      editNameBtn.addEventListener('click', () => {
-        nameEditForm.style.display = nameEditForm.style.display === 'none' ? 'block' : 'none';
-        main.querySelector('#input-profile-name')?.focus();
-      });
-    }
-    if (cancelNameBtn && nameEditForm) {
-      cancelNameBtn.addEventListener('click', () => { nameEditForm.style.display = 'none'; });
-    }
-    main.querySelector('#save-profile-name-btn')?.addEventListener('click', () => {
-      const newName = main.querySelector('#input-profile-name')?.value?.trim();
-      if (!newName) return window.showToast('Please enter a name');
-      // Persist
-      localStorage.setItem('profile_name', newName);
-      window.__currentUserName = newName;
-      // Update DOM immediately
-      const displayName = main.querySelector('#profile-display-name');
-      if (displayName) displayName.textContent = newName;
-      // Update avatar seed
-      const avatarImg = main.querySelector('#profile-avatar-img');
-      if (avatarImg) avatarImg.src = `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(newName)}&backgroundColor=e6f0eb`;
-      if (nameEditForm) nameEditForm.style.display = 'none';
-      window.showToast('Name updated successfully!');
-    });
-    const editInfoBtn = main.querySelector('#edit-personal-info-btn');
-    const infoModal = main.querySelector('#personal-info-modal');
-    if (editInfoBtn && infoModal) {
-      editInfoBtn.addEventListener('click', () => {
-        infoModal.style.display = infoModal.style.display === 'none' ? 'block' : 'none';
-      });
-    }
-    main.querySelector('#save-personal-info-btn')?.addEventListener('click', () => {
-      const age = main.querySelector('#input-age')?.value;
-      const blood = main.querySelector('#input-blood')?.value;
-      const weight = main.querySelector('#input-weight')?.value;
-      if (age) localStorage.setItem('profile_age', age);
-      if (blood) localStorage.setItem('profile_blood', blood);
-      if (weight) localStorage.setItem('profile_weight', weight + ' kg');
-      // Update display
-      const dAge = main.querySelector('#display-age');
-      const dBlood = main.querySelector('#display-blood');
-      const dWeight = main.querySelector('#display-weight');
-      if (dAge && age) dAge.textContent = age;
-      if (dBlood && blood) dBlood.textContent = blood;
-      if (dWeight && weight) dWeight.textContent = weight + ' kg';
-      if (infoModal) infoModal.style.display = 'none';
-      window.showToast('Personal info saved!');
-    });
+    initProfile(navigate);
   }
 
   if (page === 'scanner') {
@@ -533,24 +475,15 @@ function bindPageEvents(page) {
           phone: main.querySelector('#contact-phone').value,
           isSOS: main.querySelector('#contact-sos').checked
         };
-        
         try {
           await api.addContact(window.__currentUserId, contactData);
           modal.style.display = 'none';
-          navigate('profile'); // Re-render to show new contact
+          navigate('profile');
         } catch (err) {
           alert('Error adding contact: ' + err.message);
         }
       });
     }
-
-    // Logout
-    main.querySelector('#profile-logout-btn')?.addEventListener('click', () => {
-      window.__isLoggedIn = false;
-      window.__currentUserRole = 'patient';
-      window.__currentContacts = [];
-      navigate('profile'); // Return to auth
-    });
   }
 }
 
