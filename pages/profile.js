@@ -13,23 +13,37 @@ export function renderProfile(navigate) {
   // 2. Logged In State (Profile Hub)
   return `
   <div class="page-enter">
-    <header style="margin-bottom: var(--space-8); display:flex; justify-content:space-between; align-items:flex-start;">
-      <div style="display:flex; align-items:center; gap:var(--space-4);">
-        <div class="brand-avatar" style="width:4rem; height:4rem; box-shadow:var(--shadow-elevated);">
-          <img src="https://api.dicebear.com/7.x/notionists/svg?seed=${userName}&backgroundColor=e6f0eb" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />
-        </div>
-        <div>
-          <h2 class="page-title" style="margin-bottom:var(--space-1); font-size:1.75rem;">${userName}</h2>
-          <div style="display:flex; align-items:center; gap:var(--space-2); color:var(--primary); font-size:0.875rem; font-weight:600; text-transform:capitalize;">
-            <span class="material-symbols-outlined" style="font-size:1.25rem;">verified_user</span>
-            ${role} • ${t('healthId')}: ${window.__currentHealthId || 'SANJ-XXXX'}
+    <header style="margin-bottom: var(--space-8);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div style="display:flex; align-items:center; gap:var(--space-4);">
+          <div class="brand-avatar" style="width:4rem; height:4rem; box-shadow:var(--shadow-elevated);">
+            <img id="profile-avatar-img" src="https://api.dicebear.com/7.x/notionists/svg?seed=${userName}&backgroundColor=e6f0eb" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" />
+          </div>
+          <div>
+            <h2 id="profile-display-name" class="page-title" style="margin-bottom:var(--space-1); font-size:1.75rem;">${userName}</h2>
+            <div style="display:flex; align-items:center; gap:var(--space-2); color:var(--primary); font-size:0.875rem; font-weight:600; text-transform:capitalize;">
+              <span class="material-symbols-outlined" style="font-size:1.25rem;">verified_user</span>
+              ${role} • ${t('healthId')}: ${window.__currentHealthId || 'SANJ-XXXX'}
+            </div>
           </div>
         </div>
+        <button id="edit-profile-header-btn" class="btn-secondary" style="padding:var(--space-2) var(--space-4); border-radius:var(--radius-full); font-size:0.875rem;">
+          <span class="material-symbols-outlined" style="font-size:1.25rem;">edit</span>
+          Edit Name
+        </button>
       </div>
-      <button class="btn-secondary" style="padding:var(--space-2) var(--space-4); border-radius:var(--radius-full); font-size:0.875rem;">
-        <span class="material-symbols-outlined" style="font-size:1.25rem;">edit</span>
-        Edit Profile
-      </button>
+      <!-- Inline name edit form -->
+      <div id="name-edit-form" style="display:none; margin-top:var(--space-4);">
+        <div class="card" style="padding:var(--space-4); border:2px solid var(--primary); display:flex; gap:var(--space-3); align-items:center;">
+          <input type="text" id="input-profile-name" class="form-input" placeholder="Enter your name" value="${userName}" style="flex:1; font-size:1rem;" />
+          <button id="save-profile-name-btn" class="btn-primary" style="padding:var(--space-3) var(--space-5); white-space:nowrap;">
+            <span class="material-symbols-outlined">save</span> Save
+          </button>
+          <button id="cancel-profile-name-btn" class="btn-secondary" style="padding:var(--space-3);">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+      </div>
     </header>
 
     ${renderRoleSpecificInfo(role, t, contacts)}

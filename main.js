@@ -296,7 +296,34 @@ function bindPageEvents(page) {
       navigate('login');
     });
 
-    // Personal Info Edit/Save
+    // Name Edit/Save/Cancel
+    const editNameBtn = main.querySelector('#edit-profile-header-btn');
+    const nameEditForm = main.querySelector('#name-edit-form');
+    const cancelNameBtn = main.querySelector('#cancel-profile-name-btn');
+    if (editNameBtn && nameEditForm) {
+      editNameBtn.addEventListener('click', () => {
+        nameEditForm.style.display = nameEditForm.style.display === 'none' ? 'block' : 'none';
+        main.querySelector('#input-profile-name')?.focus();
+      });
+    }
+    if (cancelNameBtn && nameEditForm) {
+      cancelNameBtn.addEventListener('click', () => { nameEditForm.style.display = 'none'; });
+    }
+    main.querySelector('#save-profile-name-btn')?.addEventListener('click', () => {
+      const newName = main.querySelector('#input-profile-name')?.value?.trim();
+      if (!newName) return window.showToast('Please enter a name');
+      // Persist
+      localStorage.setItem('profile_name', newName);
+      window.__currentUserName = newName;
+      // Update DOM immediately
+      const displayName = main.querySelector('#profile-display-name');
+      if (displayName) displayName.textContent = newName;
+      // Update avatar seed
+      const avatarImg = main.querySelector('#profile-avatar-img');
+      if (avatarImg) avatarImg.src = `https://api.dicebear.com/7.x/notionists/svg?seed=${encodeURIComponent(newName)}&backgroundColor=e6f0eb`;
+      if (nameEditForm) nameEditForm.style.display = 'none';
+      window.showToast('Name updated successfully!');
+    });
     const editInfoBtn = main.querySelector('#edit-personal-info-btn');
     const infoModal = main.querySelector('#personal-info-modal');
     if (editInfoBtn && infoModal) {
@@ -549,4 +576,9 @@ if (profileBtn) {
 }
 
 // ---- Initial Load ----
+// Restore saved profile name if user set one previously
+const savedProfileName = localStorage.getItem('profile_name');
+if (savedProfileName && !window.__currentUserName) {
+  window.__currentUserName = savedProfileName;
+}
 navigate('home');
