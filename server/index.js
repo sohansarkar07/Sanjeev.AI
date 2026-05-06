@@ -10,7 +10,8 @@ const jwt = require('jsonwebtoken');
 
 // Initialize Gemini and Google Auth
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AIzaSy_YOUR_API_KEY_HERE');
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const GOOGLE_CLIENT_ID_FALLBACK = process.env.GOOGLE_CLIENT_ID || '597980671013-7jlpi4v0cvgdsdeso10mb2av0gbid17h.apps.googleusercontent.com';
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID_FALLBACK);
 const JWT_SECRET = process.env.JWT_SECRET || 'sanjeev_super_secret_key_123';
 
 const app = express();
@@ -77,7 +78,7 @@ app.post('/api/auth/google', async (req, res) => {
   try {
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: GOOGLE_CLIENT_ID_FALLBACK,
     });
     const payload = ticket.getPayload();
     const email = payload.email;
