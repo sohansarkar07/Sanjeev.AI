@@ -361,12 +361,11 @@ function bindPageEvents(page) {
       setTimeout(() => {
         const btnContainer = main.querySelector("#google-signin-btn");
         if (btnContainer) {
-          const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
           window.google.accounts.id.initialize({
             client_id: "597980671013-7jlpi4v0cvgdsdeso10mb2av0gbid17h.apps.googleusercontent.com",
             callback: async (response) => {
               try {
-                const role = main.querySelector('#role-select')?.value || localStorage.getItem('pendingRole') || 'patient';
+                const role = main.querySelector('#role-select')?.value || 'patient';
                 const submitBtnText = main.querySelector('#auth-submit span.btn-text');
                 if(submitBtnText) submitBtnText.textContent = 'Authenticating via Google...';
                 
@@ -379,7 +378,6 @@ function bindPageEvents(page) {
                 window.__currentHealthId = authData.user.healthId;
                 localStorage.setItem('sanjeev_token', authData.token);
                 localStorage.setItem('userId', authData.user.id);
-                localStorage.removeItem('pendingRole');
                 
                 window.showToast("Login Successful!");
                 navigate(authData.user.role === 'caregiver' ? 'caregiver' : 'home');
@@ -389,18 +387,9 @@ function bindPageEvents(page) {
                 if(submitBtnText) submitBtnText.textContent = 'Enter Hub';
               }
             },
-            ux_mode: isMobile ? 'redirect' : 'popup',
-            login_uri: window.location.origin + '/',
+            ux_mode: 'popup',
             use_fedcm_for_prompt: false
           });
-          // Save role before redirect (needed for mobile redirect flow)
-          const roleSelect = main.querySelector('#role-select');
-          if (roleSelect) {
-            roleSelect.addEventListener('change', () => {
-              localStorage.setItem('pendingRole', roleSelect.value);
-            });
-            localStorage.setItem('pendingRole', roleSelect.value);
-          }
           window.google.accounts.id.renderButton(
             btnContainer,
             { theme: "outline", size: "large", shape: "pill", width: 300 }
