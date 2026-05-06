@@ -175,7 +175,27 @@ function bindPageEvents(page) {
 
   // ClearScript
   if (page === 'clearscript') {
-    main.querySelector('#clearscript-confirm')?.addEventListener('click', () => navigate('risk-analysis'));
+    main.querySelector('#clearscript-confirm')?.addEventListener('click', async () => {
+      const lastScanStr = sessionStorage.getItem('lastScan');
+      if (lastScanStr) {
+        try {
+          const data = JSON.parse(lastScanStr);
+          const userId = localStorage.getItem('userId');
+          if (userId && userId !== '1') {
+            await api.addPrescription(userId, {
+              medication: data.medication || 'Unknown',
+              dosage: data.dosage || '',
+              instructions: data.instructions || '',
+              doctorName: data.doctorName || 'Unknown',
+              dateScanned: new Date().toISOString()
+            });
+          }
+        } catch(e) {
+          console.error("Error saving prescription", e);
+        }
+      }
+      navigate('risk-analysis');
+    });
   }
 
   // Risk Analysis
