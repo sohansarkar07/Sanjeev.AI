@@ -182,16 +182,19 @@ function bindPageEvents(page) {
           const data = JSON.parse(lastScanStr);
           const userId = window.__currentUserId || localStorage.getItem('userId');
           if (userId && userId !== '1' && userId !== 'undefined') {
+            window.showToast("Saving to health history...");
             await api.addPrescription(userId, {
               medication: data.medication || 'Unknown',
               dosage: data.dosage || '',
               instructions: data.instructions || '',
               doctorName: data.doctorName || 'Unknown',
-              dateScanned: new Date().toISOString()
+              date: new Date().toISOString().split('T')[0]
             });
+            window.showToast("Saved successfully!");
           }
         } catch(e) {
           console.error("Error saving prescription", e);
+          window.showToast("Save failed: " + e.message, true);
         }
       }
       navigate('risk-analysis');

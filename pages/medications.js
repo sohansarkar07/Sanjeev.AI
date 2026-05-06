@@ -55,7 +55,7 @@ export async function initMedications() {
     } else {
       let html = '';
       prescriptions.forEach((p, idx) => {
-        const dateStr = new Date(p.dateScanned || p.createdAt || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        const dateStr = new Date(p.date || p.dateScanned || p.createdAt || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
         
         // Alternate colors for visual appeal
         const colors = ['var(--primary-container)', 'var(--tertiary)', 'var(--secondary-container)'];

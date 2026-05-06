@@ -98,7 +98,7 @@ export async function initTimeline() {
     prescriptions.forEach(p => {
       events.push({
         type: 'medication',
-        date: new Date(p.dateScanned || p.createdAt || Date.now()),
+        date: new Date(p.date || p.dateScanned || p.createdAt || Date.now()),
         title: `Started ${p.medication}`,
         desc: `Dosage: ${p.dosage || 'N/A'}. ${p.instructions || ''}`,
         icon: 'pill',

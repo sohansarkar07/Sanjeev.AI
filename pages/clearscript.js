@@ -67,6 +67,18 @@ export function renderClearScript(navigate) {
         </div>
       `;
       
+      // Enable confirm button after analysis
+      const confirmBtn = document.getElementById('clearscript-confirm');
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.style.opacity = '1';
+        confirmBtn.style.cursor = 'pointer';
+        const icon = confirmBtn.querySelector('#confirm-icon');
+        const text = confirmBtn.querySelector('#confirm-text');
+        if (icon) icon.textContent = 'analytics';
+        if (text) text.textContent = t('runRiskAnalysis');
+      }
+
       // Bind interactive buttons
       setTimeout(() => {
         const btnConfirm = document.getElementById('btn-confirm-scan');
@@ -112,8 +124,9 @@ export function renderClearScript(navigate) {
         <!-- Dynamic content injected here -->
       </div>
 
-      <button id="clearscript-confirm" class="btn-primary" style="width:100%; justify-content:center; padding:16px;">
-        <span class="material-symbols-outlined">analytics</span> ${t('runRiskAnalysis')}
+      <button id="clearscript-confirm" class="btn-primary" disabled style="width:100%; justify-content:center; padding:16px; opacity:0.5; cursor:not-allowed;">
+        <span class="material-symbols-outlined" id="confirm-icon">sync</span> 
+        <span id="confirm-text">Analyzing Prescription...</span>
       </button>
     </div>
   </div>
