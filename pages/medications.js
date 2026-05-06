@@ -29,7 +29,7 @@ export async function initMedications() {
   const { api } = await import('../api.js');
   const userId = localStorage.getItem('userId');
   
-  if (!userId || userId === '1') {
+  if (!userId || userId === '1' || userId === 'undefined') {
     listContainer.innerHTML = `
       <div class="card" style="padding:var(--space-6); text-align:center; border:2px dashed var(--outline-variant); background:transparent;">
         <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--outline); margin-bottom:var(--space-2);">history</span>

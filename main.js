@@ -181,7 +181,7 @@ function bindPageEvents(page) {
         try {
           const data = JSON.parse(lastScanStr);
           const userId = window.__currentUserId || localStorage.getItem('userId');
-          if (userId && userId !== '1') {
+          if (userId && userId !== '1' && userId !== 'undefined') {
             await api.addPrescription(userId, {
               medication: data.medication || 'Unknown',
               dosage: data.dosage || '',
