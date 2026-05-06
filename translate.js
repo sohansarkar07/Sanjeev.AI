@@ -27,7 +27,7 @@ const translations = {
     markAsTaken: 'MARK AS TAKEN',
     holisticTools: 'Holistic Health Tools',
     symptomCheck: 'Symptom Check',
-    mergedMeds: 'Merged Meds',
+    mergedMeds: 'Prescription History',
     caregiverHub: 'Caregiver Hub',
     weeklyReport: 'Weekly Report',
     interactionMap: 'Interaction Map',
@@ -180,8 +180,8 @@ const translations = {
     emergencyCare: 'Emergency & Care Team',
 
     // Medications
-    medsTitle: 'Unified Medications',
-    medsSub: 'All your prescriptions from different doctors merged into one clear view.',
+    medsTitle: 'Prescription History',
+    medsSub: 'All your past prescriptions safely stored.',
     showGeneric: 'Show Generic Names',
     aiUnifiedAlert: 'AI Check: No duplicates found across your 2 different prescribers. The brand-to-generic conversion shows all unique active ingredients.',
     takeAfD: 'Take 1 after dinner',

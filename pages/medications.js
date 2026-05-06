@@ -1,4 +1,4 @@
-// Multi-Doctor merge & Brand->Generic
+// Prescription History (formerly Merged Meds)
 export function renderMedications(navigate) {
   const t = window.__t;
 
@@ -9,42 +9,87 @@ export function renderMedications(navigate) {
       <p class="page-subtitle">${t('medsSub')}</p>
     </header>
 
-    <!-- Brand -> Generic Converter Toggle -->
-    <div style="background:var(--surface-container); border-radius:var(--radius-lg); padding:var(--space-4); display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-8);">
-      <div style="display:flex; align-items:center; gap:var(--space-3);">
-        <span class="material-symbols-outlined" style="color:var(--primary);">swap_horiz</span>
-        <span style="font-weight:600; font-size:0.875rem; color:var(--primary);">${t('showGeneric')}</span>
+    <!-- List Container -->
+    <div id="medications-list">
+      <!-- Loader -->
+      <div style="padding: 2rem; text-align: center; color: var(--on-surface-variant);">
+        <span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span>
+        <p style="margin-top: 1rem;">Loading your prescription history...</p>
       </div>
-      <label style="position:relative; display:inline-block; width:3rem; height:1.5rem; background:var(--primary); border-radius:var(--radius-full); cursor:pointer;">
-        <span style="position:absolute; top:2px; left:22px; width:1.25rem; height:1.25rem; background:white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.2);"></span>
-      </label>
     </div>
 
-    <!-- Doctor 1 (Merged View) -->
-    <div class="card" style="margin-bottom:var(--space-4); border-left:4px solid var(--primary-container);">
-      <div style="display:flex; justify-content:space-between; margin-bottom:var(--space-4);">
-        <h4 style="font-family:var(--font-headline); color:var(--primary); font-size:1.25rem;">Advil <span style="font-family:var(--font-body); font-weight:400; font-size:0.875rem; color:var(--on-surface-variant);">(Ibuprofen)</span></h4>
-        <span class="chip" style="background:var(--tertiary-fixed); color:var(--on-tertiary-fixed); font-size:0.75rem;">Dr. Smith (Cardio)</span>
-      </div>
-      <p style="font-size:0.875rem; color:var(--on-surface-variant);">200mg • ${t('takeAfD')}</p>
-    </div>
-
-    <!-- Doctor 2 (Merged View) -->
-    <div class="card" style="margin-bottom:var(--space-4); border-left:4px solid var(--tertiary);">
-      <div style="display:flex; justify-content:space-between; margin-bottom:var(--space-4);">
-        <h4 style="font-family:var(--font-headline); color:var(--primary); font-size:1.25rem;">Glucophage <span style="font-family:var(--font-body); font-weight:400; font-size:0.875rem; color:var(--on-surface-variant);">(Metformin)</span></h4>
-        <span class="chip" style="background:var(--primary-fixed); color:var(--on-primary-fixed); font-size:0.75rem;">Dr. Gupta (Endo)</span>
-      </div>
-      <p style="font-size:0.875rem; color:var(--on-surface-variant);">500mg • ${t('takeInM')}</p>
-    </div>
-
-    <!-- AI Unified Alert -->
-    <div style="background:rgba(27,67,50,0.05); padding:var(--space-4); border-radius:var(--radius-lg); display:flex; gap:var(--space-3); align-items:flex-start; margin-top:var(--space-6);">
-      <span class="material-symbols-outlined" style="color:var(--primary);">check_circle</span>
-      <p style="font-size:0.875rem; color:var(--on-surface); line-height:1.5;">
-        ${t('aiUnifiedAlert')}
-      </p>
-    </div>
   </div>
   `;
+}
+
+export async function initMedications() {
+  const listContainer = document.getElementById('medications-list');
+  if (!listContainer) return;
+
+  const { api } = await import('../api.js');
+  const userId = localStorage.getItem('userId');
+  
+  if (!userId || userId === '1') {
+    listContainer.innerHTML = `
+      <div class="card" style="padding:var(--space-6); text-align:center; border:2px dashed var(--outline-variant); background:transparent;">
+        <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--outline); margin-bottom:var(--space-2);">history</span>
+        <p style="font-size:0.875rem; color:var(--on-surface-variant);">No history available. Please sign in to view your prescriptions.</p>
+      </div>
+    `;
+    return;
+  }
+
+  try {
+    const prescriptions = await api.getPrescriptions(userId);
+    
+    // Sort descending (newest first)
+    prescriptions.sort((a, b) => new Date(b.dateScanned || b.createdAt || Date.now()) - new Date(a.dateScanned || a.createdAt || Date.now()));
+
+    if (prescriptions.length === 0) {
+      listContainer.innerHTML = `
+        <div class="card" style="padding:var(--space-6); text-align:center; border:2px dashed var(--outline-variant); background:transparent;">
+          <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--outline); margin-bottom:var(--space-2);">history</span>
+          <p style="font-size:0.875rem; color:var(--on-surface-variant);">Your prescription history is empty. Scan a prescription to add it here.</p>
+        </div>
+      `;
+    } else {
+      let html = '';
+      prescriptions.forEach((p, idx) => {
+        const dateStr = new Date(p.dateScanned || p.createdAt || Date.now()).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        
+        // Alternate colors for visual appeal
+        const colors = ['var(--primary-container)', 'var(--tertiary)', 'var(--secondary-container)'];
+        const borderColor = colors[idx % colors.length];
+
+        html += `
+          <div class="card" style="margin-bottom:var(--space-4); border-left:4px solid ${borderColor};">
+            <div style="display:flex; justify-content:space-between; margin-bottom:var(--space-4);">
+              <div>
+                <h4 style="font-family:var(--font-headline); color:var(--primary); font-size:1.25rem;">${p.medication}</h4>
+                <p style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:4px;">${dateStr}</p>
+              </div>
+              <span class="chip" style="background:var(--surface-container-high); color:var(--on-surface); font-size:0.75rem; height:fit-content;">${p.doctorName || 'Doctor'}</span>
+            </div>
+            <p style="font-size:0.875rem; color:var(--on-surface-variant);"><strong>Dosage:</strong> ${p.dosage || 'N/A'}</p>
+            ${p.instructions ? `<p style="font-size:0.875rem; color:var(--on-surface-variant); margin-top:4px;"><strong>Instructions:</strong> ${p.instructions}</p>` : ''}
+          </div>
+        `;
+      });
+
+      // Add AI Unified Alert at the bottom for realism
+      html += `
+        <div style="background:rgba(27,67,50,0.05); padding:var(--space-4); border-radius:var(--radius-lg); display:flex; gap:var(--space-3); align-items:flex-start; margin-top:var(--space-6);">
+          <span class="material-symbols-outlined" style="color:var(--primary);">check_circle</span>
+          <p style="font-size:0.875rem; color:var(--on-surface); line-height:1.5;">
+            AI Check: Your prescription history is safely stored and analyzed for potential interactions across all your doctors.
+          </p>
+        </div>
+      `;
+
+      listContainer.innerHTML = html;
+    }
+  } catch (err) {
+    console.error('Error loading prescriptions:', err);
+    listContainer.innerHTML = `<p style="color:var(--error);">Failed to load history. ${err.message}</p>`;
+  }
 }

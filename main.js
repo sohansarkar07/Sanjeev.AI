@@ -11,7 +11,7 @@ import { renderRiskAnalysis, initRiskAnalysis } from './pages/risk-analysis.js';
 import { renderAlert } from './pages/alert.js';
 import { renderCaregiver } from './pages/caregiver.js';
 import { renderSymptoms, initSymptoms } from './pages/symptoms.js';
-import { renderMedications } from './pages/medications.js';
+import { renderMedications, initMedications } from './pages/medications.js';
 import { renderReport } from './pages/report.js';
 import { renderClearScript } from './pages/clearscript.js';
 import { renderDrugInteraction } from './pages/drug-interaction.js';
@@ -206,6 +206,11 @@ function bindPageEvents(page) {
   // Timeline
   if (page === 'timeline') {
     initTimeline();
+  }
+
+  // Medications
+  if (page === 'medications') {
+    initMedications();
   }
 
   // Mood
