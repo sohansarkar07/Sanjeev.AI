@@ -5,7 +5,7 @@
 import { t, setLanguage, getLanguage } from './translate.js';
 import { renderHome, initHome } from './pages/home.js';
 import { renderScanner } from './pages/scanner.js';
-import { renderTimeline } from './pages/timeline.js';
+import { renderTimeline, initTimeline } from './pages/timeline.js';
 import { renderMood } from './pages/mood.js';
 import { renderRiskAnalysis, initRiskAnalysis } from './pages/risk-analysis.js';
 import { renderAlert } from './pages/alert.js';
@@ -181,6 +181,11 @@ function bindPageEvents(page) {
   // Risk Analysis
   if (page === 'risk-analysis') {
     initRiskAnalysis();
+  }
+
+  // Timeline
+  if (page === 'timeline') {
+    initTimeline();
   }
 
   // Mood
