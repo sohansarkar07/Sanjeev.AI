@@ -73,12 +73,12 @@ export async function initTimeline() {
   const userId = localStorage.getItem('userId');
   
   if (!userId || userId === '1') {
-    trackContainer.innerHTML = \`
+    trackContainer.innerHTML = `
       <div class="card" style="padding:var(--space-6); text-align:center; border:2px dashed var(--outline-variant); background:transparent;">
         <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--outline); margin-bottom:var(--space-2);">timeline</span>
         <p style="font-size:0.875rem; color:var(--on-surface-variant);">No data available. Please sign in to view your timeline.</p>
       </div>
-    \`;
+    `;
     const aiTitle = document.getElementById('timeline-ai-title');
     const aiDesc = document.getElementById('timeline-ai-desc');
     if(aiTitle) aiTitle.innerText = 'No Data';
@@ -99,8 +99,8 @@ export async function initTimeline() {
       events.push({
         type: 'medication',
         date: new Date(p.dateScanned || p.createdAt || Date.now()),
-        title: \`Started \${p.medication}\`,
-        desc: \`Dosage: \${p.dosage || 'N/A'}. \${p.instructions || ''}\`,
+        title: `Started ${p.medication}`,
+        desc: `Dosage: ${p.dosage || 'N/A'}. ${p.instructions || ''}`,
         icon: 'pill',
         color: 'var(--primary)'
       });
@@ -115,7 +115,7 @@ export async function initTimeline() {
       events.push({
         type: 'mood',
         date: new Date(m.date || m.createdAt || Date.now()),
-        title: \`Mood Check-in: \${m.moodLevel}/10\`,
+        title: `Mood Check-in: ${m.moodLevel}/10`,
         desc: m.notes || 'No notes provided.',
         icon: icon,
         color: 'var(--tertiary)'
@@ -126,12 +126,12 @@ export async function initTimeline() {
     events.sort((a, b) => b.date - a.date);
 
     if (events.length === 0) {
-      trackContainer.innerHTML = \`
+      trackContainer.innerHTML = `
         <div class="card" style="padding:var(--space-6); text-align:center; border:2px dashed var(--outline-variant); background:transparent;">
           <span class="material-symbols-outlined" style="font-size:2.5rem; color:var(--outline); margin-bottom:var(--space-2);">timeline</span>
           <p style="font-size:0.875rem; color:var(--on-surface-variant);">Your timeline is empty. Add a prescription or mood log to get started.</p>
         </div>
-      \`;
+      `;
       const aiTitle = document.getElementById('timeline-ai-title');
       const aiDesc = document.getElementById('timeline-ai-desc');
       if(aiTitle) aiTitle.innerText = 'Ready to Analyze';
@@ -140,21 +140,21 @@ export async function initTimeline() {
       let html = '<div class="timeline-line"></div>';
       events.forEach(ev => {
         const dateStr = ev.date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-        html += \`
+        html += `
           <div class="timeline-item">
-            <div class="timeline-dot" style="background-color:\${ev.color}"></div>
+            <div class="timeline-dot" style="background-color:${ev.color}"></div>
             <div class="timeline-card">
               <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
-                  <span class="timeline-date">\${dateStr}</span>
-                  <h3>\${ev.title}</h3>
-                  <p>\${ev.desc}</p>
+                  <span class="timeline-date">${dateStr}</span>
+                  <h3>${ev.title}</h3>
+                  <p>${ev.desc}</p>
                 </div>
-                <span class="material-symbols-outlined" style="color:\${ev.color}; font-size: 1.5rem; flex-shrink:0;">\${ev.icon}</span>
+                <span class="material-symbols-outlined" style="color:${ev.color}; font-size: 1.5rem; flex-shrink:0;">${ev.icon}</span>
               </div>
             </div>
           </div>
-        \`;
+        `;
       });
       trackContainer.innerHTML = html;
 
@@ -168,15 +168,15 @@ export async function initTimeline() {
 
       if (aiTitle && aiDesc) {
         if (latestMood && latestMed) {
-          aiTitle.innerText = \`Mood changes correlate with \${latestMed.medication}\`;
-          aiDesc.innerText = \`Observation: Since starting \${latestMed.medication}, your recent mood check-in was \${latestMood.moodLevel}/10.\`;
+          aiTitle.innerText = `Mood changes correlate with ${latestMed.medication}`;
+          aiDesc.innerText = `Observation: Since starting ${latestMed.medication}, your recent mood check-in was ${latestMood.moodLevel}/10.`;
           if (aiBtn) aiBtn.style.display = 'block';
         } else if (latestMed) {
-          aiTitle.innerText = \`Monitoring \${latestMed.medication}\`;
-          aiDesc.innerText = \`Log your mood regularly to see how \${latestMed.medication} affects your well-being.\`;
+          aiTitle.innerText = `Monitoring ${latestMed.medication}`;
+          aiDesc.innerText = `Log your mood regularly to see how ${latestMed.medication} affects your well-being.`;
         } else if (latestMood) {
-          aiTitle.innerText = \`Mood Analysis\`;
-          aiDesc.innerText = \`Your recent mood level is \${latestMood.moodLevel}/10. Keep logging to establish a baseline.\`;
+          aiTitle.innerText = `Mood Analysis`;
+          aiDesc.innerText = `Your recent mood level is ${latestMood.moodLevel}/10. Keep logging to establish a baseline.`;
         }
       }
 
@@ -195,13 +195,13 @@ export async function initTimeline() {
         const ms = document.getElementById('metric-stress');
         const me = document.getElementById('metric-energy');
         const mr = document.getElementById('metric-recovery');
-        if(ms) ms.style.height = \`\${stressLevel}%\`;
-        if(me) me.style.height = \`\${energyLevel}%\`;
-        if(mr) mr.style.height = \`\${recoveryLevel}%\`;
+        if(ms) ms.style.height = `${stressLevel}%`;
+        if(me) me.style.height = `${energyLevel}%`;
+        if(mr) mr.style.height = `${recoveryLevel}%`;
       }, 100);
     }
   } catch (err) {
     console.error('Error loading timeline:', err);
-    trackContainer.innerHTML = \`<p style="color:var(--error);">Failed to load timeline. \${err.message}</p>\`;
+    trackContainer.innerHTML = `<p style="color:var(--error);">Failed to load timeline. ${err.message}</p>`;
   }
 }
