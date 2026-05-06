@@ -295,7 +295,32 @@ function bindPageEvents(page) {
       window.showToast("Logged out safely");
       navigate('login');
     });
-    main.querySelector('.btn-secondary')?.addEventListener('click', () => window.showToast('Edit mode enabled'));
+
+    // Personal Info Edit/Save
+    const editInfoBtn = main.querySelector('#edit-personal-info-btn');
+    const infoModal = main.querySelector('#personal-info-modal');
+    if (editInfoBtn && infoModal) {
+      editInfoBtn.addEventListener('click', () => {
+        infoModal.style.display = infoModal.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+    main.querySelector('#save-personal-info-btn')?.addEventListener('click', () => {
+      const age = main.querySelector('#input-age')?.value;
+      const blood = main.querySelector('#input-blood')?.value;
+      const weight = main.querySelector('#input-weight')?.value;
+      if (age) localStorage.setItem('profile_age', age);
+      if (blood) localStorage.setItem('profile_blood', blood);
+      if (weight) localStorage.setItem('profile_weight', weight + ' kg');
+      // Update display
+      const dAge = main.querySelector('#display-age');
+      const dBlood = main.querySelector('#display-blood');
+      const dWeight = main.querySelector('#display-weight');
+      if (dAge && age) dAge.textContent = age;
+      if (dBlood && blood) dBlood.textContent = blood;
+      if (dWeight && weight) dWeight.textContent = weight + ' kg';
+      if (infoModal) infoModal.style.display = 'none';
+      window.showToast('Personal info saved!');
+    });
   }
 
   if (page === 'scanner') {

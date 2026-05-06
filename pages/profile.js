@@ -158,25 +158,67 @@ function renderRoleSpecificInfo(role, t, contacts) {
   }
   
   if (role === 'patient') {
+    const savedAge = localStorage.getItem('profile_age') || '--';
+    const savedBlood = localStorage.getItem('profile_blood') || '--';
+    const savedWeight = localStorage.getItem('profile_weight') || '--';
+
     return `
     <!-- Personal Info -->
     <section style="margin-bottom:var(--space-8);">
-      <h3 class="section-title" style="margin-bottom:var(--space-4);">${t('personalInfo')}</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-4);">
+        <h3 class="section-title">${t('personalInfo')}</h3>
+        <button id="edit-personal-info-btn" class="btn-text" style="color:var(--primary); font-weight:700; font-size:0.875rem;">
+          <span class="material-symbols-outlined" style="font-size:1.125rem;">edit</span> Edit
+        </button>
+      </div>
       <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--space-3);">
         <div class="card" style="text-align:center; padding:var(--space-4);">
           <span class="material-symbols-outlined" style="color:var(--tertiary); margin-bottom:var(--space-2);">cake</span>
           <p style="font-size:0.75rem; color:var(--on-surface-variant); text-transform:uppercase;">${t('age')}</p>
-          <p style="font-weight:700;">${t('age32')}</p>
+          <p id="display-age" style="font-weight:700;">${savedAge}</p>
         </div>
         <div class="card" style="text-align:center; padding:var(--space-4);">
           <span class="material-symbols-outlined" style="color:var(--error); margin-bottom:var(--space-2);">bloodtype</span>
           <p style="font-size:0.75rem; color:var(--on-surface-variant); text-transform:uppercase;">${t('bloodType')}</p>
-          <p style="font-weight:700;">O+</p>
+          <p id="display-blood" style="font-weight:700;">${savedBlood}</p>
         </div>
         <div class="card" style="text-align:center; padding:var(--space-4);">
           <span class="material-symbols-outlined" style="color:var(--primary); margin-bottom:var(--space-2);">scale</span>
           <p style="font-size:0.75rem; color:var(--on-surface-variant); text-transform:uppercase;">${t('weightTitle')}</p>
-          <p style="font-weight:700;">${t('weightLabel')}</p>
+          <p id="display-weight" style="font-weight:700;">${savedWeight}</p>
+        </div>
+      </div>
+
+      <!-- Edit Modal (hidden) -->
+      <div id="personal-info-modal" style="display:none; margin-top:var(--space-4);">
+        <div class="card" style="padding:var(--space-4); border:2px solid var(--primary);">
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--space-3);">
+            <div>
+              <label style="font-size:0.75rem; font-weight:600; color:var(--on-surface-variant);">Age</label>
+              <input type="number" id="input-age" class="form-input" placeholder="e.g. 25" value="${savedAge !== '--' ? savedAge : ''}" style="text-align:center;" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem; font-weight:600; color:var(--on-surface-variant);">Blood Type</label>
+              <select id="input-blood" class="form-input" style="text-align:center;">
+                <option value="">Select</option>
+                <option value="A+" ${savedBlood === 'A+' ? 'selected' : ''}>A+</option>
+                <option value="A-" ${savedBlood === 'A-' ? 'selected' : ''}>A-</option>
+                <option value="B+" ${savedBlood === 'B+' ? 'selected' : ''}>B+</option>
+                <option value="B-" ${savedBlood === 'B-' ? 'selected' : ''}>B-</option>
+                <option value="O+" ${savedBlood === 'O+' ? 'selected' : ''}>O+</option>
+                <option value="O-" ${savedBlood === 'O-' ? 'selected' : ''}>O-</option>
+                <option value="AB+" ${savedBlood === 'AB+' ? 'selected' : ''}>AB+</option>
+                <option value="AB-" ${savedBlood === 'AB-' ? 'selected' : ''}>AB-</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.75rem; font-weight:600; color:var(--on-surface-variant);">Weight (kg)</label>
+              <input type="number" id="input-weight" class="form-input" placeholder="e.g. 65" value="${savedWeight !== '--' ? savedWeight : ''}" style="text-align:center;" />
+            </div>
+          </div>
+          <button id="save-personal-info-btn" class="btn-primary" style="width:100%; justify-content:center; margin-top:var(--space-3); padding:var(--space-3);">
+            <span class="material-symbols-outlined">save</span> Save
+          </button>
         </div>
       </div>
     </section>
