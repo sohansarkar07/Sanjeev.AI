@@ -9,7 +9,7 @@ import { renderTimeline, initTimeline } from './pages/timeline.js';
 import { renderMood } from './pages/mood.js';
 import { renderRiskAnalysis, initRiskAnalysis } from './pages/risk-analysis.js';
 import { renderAlert } from './pages/alert.js';
-import { renderCaregiver } from './pages/caregiver.js';
+import { renderCaregiver, initCaregiver } from './pages/caregiver.js';
 import { renderSymptoms, initSymptoms } from './pages/symptoms.js';
 import { renderMedications, initMedications } from './pages/medications.js';
 import { renderReport } from './pages/report.js';
@@ -211,6 +211,11 @@ function bindPageEvents(page) {
     initTimeline();
   }
 
+  // Caregiver
+  if (page === 'caregiver') {
+    initCaregiver();
+  }
+
   // Medications
   if (page === 'medications') {
     initMedications();
@@ -316,15 +321,7 @@ function bindPageEvents(page) {
     initSymptoms();
   }
 
-  if (page === 'caregiver') {
-    main.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        if (!e.target.closest('#tool-interaction')) {
-          window.showToast(btn.textContent.trim() + " triggered");
-        }
-      });
-    });
-  }
+  // (caregiver events are handled by initCaregiver)
 
   if (page === 'alert') {
     main.querySelector('.btn-primary')?.addEventListener('click', () => {
