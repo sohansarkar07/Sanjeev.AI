@@ -34,8 +34,8 @@ export function renderClearScript(navigate) {
         confidenceStatus = 'Requires Manual Confirmation';
         actionHtml = `
           <div style="margin-top:16px; display:flex; gap:8px;">
-            <button class="btn-primary" style="flex:1; justify-content:center; padding:10px;" onclick="window.showToast('Confirmation saved!')">Confirm</button>
-            <button class="btn-secondary" style="flex:1; justify-content:center; padding:10px;" onclick="window.showToast('Edit mode activated')">Edit</button>
+            <button id="btn-confirm-scan" class="btn-primary" style="flex:1; justify-content:center; padding:10px;">Confirm</button>
+            <button id="btn-edit-scan" class="btn-secondary" style="flex:1; justify-content:center; padding:10px;">Edit</button>
           </div>
         `;
       } else if (data.confidence < 60) { 
@@ -44,9 +44,9 @@ export function renderClearScript(navigate) {
         confidenceStatus = 'Manual Fallback Required';
         actionHtml = `
           <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
-            <input type="text" value="${data.medication}" style="padding:10px; border-radius:8px; border:1px solid var(--outline-variant); width:100%; font-family:inherit;">
-            <input type="text" value="${data.dosage} • ${data.instructions}" style="padding:10px; border-radius:8px; border:1px solid var(--outline-variant); width:100%; font-family:inherit;">
-            <button class="btn-primary" style="width:100%; justify-content:center; padding:12px;" onclick="window.showToast('Manual entry saved!')">Save Fallback</button>
+            <input type="text" id="fallback-med" value="${data.medication}" style="padding:10px; border-radius:8px; border:1px solid var(--outline-variant); width:100%; font-family:inherit;">
+            <input type="text" id="fallback-dose" value="${data.dosage} • ${data.instructions}" style="padding:10px; border-radius:8px; border:1px solid var(--outline-variant); width:100%; font-family:inherit;">
+            <button id="btn-save-fallback" class="btn-primary" style="width:100%; justify-content:center; padding:12px;">Save Fallback</button>
           </div>
         `;
       }
@@ -66,6 +66,29 @@ export function renderClearScript(navigate) {
           ${actionHtml}
         </div>
       `;
+      
+      // Bind interactive buttons
+      setTimeout(() => {
+        const btnConfirm = document.getElementById('btn-confirm-scan');
+        const btnEdit = document.getElementById('btn-edit-scan');
+        const btnSaveFallback = document.getElementById('btn-save-fallback');
+        
+        if (btnConfirm) btnConfirm.addEventListener('click', () => window.showToast('Confirmation saved!'));
+        if (btnEdit) btnEdit.addEventListener('click', () => window.showToast('Edit mode activated'));
+        if (btnSaveFallback) {
+          btnSaveFallback.addEventListener('click', () => {
+            const medInput = document.getElementById('fallback-med');
+            const doseInput = document.getElementById('fallback-dose');
+            if (medInput && doseInput) {
+               data.medication = medInput.value;
+               data.dosage = doseInput.value.split('•')[0]?.trim() || '';
+               data.instructions = doseInput.value.split('•')[1]?.trim() || '';
+               sessionStorage.setItem('lastScan', JSON.stringify(data));
+               window.showToast('Manual entry saved!');
+            }
+          });
+        }
+      }, 50);
     } catch (err) {
       container.innerHTML = `
         <div style="padding:var(--space-4); color:var(--error); text-align:center;">

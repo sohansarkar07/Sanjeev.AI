@@ -180,7 +180,7 @@ function bindPageEvents(page) {
       if (lastScanStr) {
         try {
           const data = JSON.parse(lastScanStr);
-          const userId = localStorage.getItem('userId');
+          const userId = window.__currentUserId || localStorage.getItem('userId');
           if (userId && userId !== '1') {
             await api.addPrescription(userId, {
               medication: data.medication || 'Unknown',
@@ -374,6 +374,7 @@ function bindPageEvents(page) {
                 window.__currentUserId = authData.user.id;
                 window.__currentHealthId = authData.user.healthId;
                 localStorage.setItem('sanjeev_token', authData.token);
+                localStorage.setItem('userId', authData.user.id);
                 
                 window.showToast("Login Successful!");
                 navigate(authData.user.role === 'caregiver' ? 'caregiver' : 'home');
@@ -421,6 +422,8 @@ function bindPageEvents(page) {
           window.__currentUserName = authData.user.name;
           window.__currentUserId = authData.user.id;
           window.__currentHealthId = authData.user.healthId;
+          localStorage.setItem('sanjeev_token', authData.token);
+          localStorage.setItem('userId', authData.user.id);
           
           navigate(authData.user.role === 'caregiver' ? 'caregiver' : 'home');
 
