@@ -84,37 +84,40 @@ app.post('/api/auth/google', async (req, res) => {
     const name = payload.name;
     const assignedRole = role || 'patient';
 
+    // Atomic upsert: find by email OR create new — guarantees same user doc always
     let user = await User.findOne({ email });
-    
-    if (user) {
-      const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
-      return res.json({
-        message: 'Google login successful',
-        token,
-        user: { id: user._id, name: user.name, role: user.role, email: user.email, healthId: user.healthId }
-      });
-    } else {
-      const healthId = generateHealthId();
-      user = await User.create({ name, role: assignedRole, passkey: 'GOOGLE_AUTH', healthId, email });
-      
-      if (assignedRole === 'patient') {
-        await History.create({
-          userId: user._id,
-          title: 'Google Auth Registration',
-          date: new Date().toISOString().split('T')[0],
-          description: 'Account created via Google.'
-        });
-      }
 
-      const token = jwt.sign({ id: user._id, role: assignedRole }, JWT_SECRET, { expiresIn: '7d' });
-      return res.json({
-        message: 'Google registration successful',
-        token,
-        user: { id: user._id, name, role: assignedRole, email, healthId }
-      });
+    if (!user) {
+      const healthId = generateHealthId();
+      try {
+        user = await User.create({ name, role: assignedRole, passkey: 'GOOGLE_AUTH', healthId, email });
+        if (assignedRole === 'patient') {
+          await History.create({
+            userId: user._id,
+            title: 'Google Auth Registration',
+            date: new Date().toISOString().split('T')[0],
+            description: 'Account created via Google.'
+          });
+        }
+      } catch (createErr) {
+        // Handle race condition: if duplicate email error, fetch the existing one
+        if (createErr.code === 11000) {
+          user = await User.findOne({ email });
+        } else {
+          throw createErr;
+        }
+      }
     }
+
+    const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, { expiresIn: '30d' });
+    return res.json({
+      message: 'Google login successful',
+      token,
+      user: { id: user._id, name: user.name, role: user.role, email: user.email, healthId: user.healthId }
+    });
   } catch (error) {
-    res.status(401).json({ error: 'Invalid Google credential' });
+    console.error('Google auth error:', error);
+    res.status(401).json({ error: 'Google authentication failed: ' + error.message });
   }
 });
 

@@ -14,7 +14,7 @@ import { renderSymptoms, initSymptoms } from './pages/symptoms.js';
 import { renderMedications, initMedications } from './pages/medications.js';
 import { renderReport } from './pages/report.js';
 import { renderClearScript } from './pages/clearscript.js';
-import { renderDrugInteraction } from './pages/drug-interaction.js';
+import { renderDrugInteraction, initDrugInteraction } from './pages/drug-interaction.js';
 import { renderLogin } from './pages/login.js';
 import { renderProfile, initProfile } from './pages/profile.js';
 import { api } from './api.js';
@@ -299,11 +299,7 @@ function bindPageEvents(page) {
   }
 
   if (page === 'drug-interaction') {
-    main.querySelector('#add-drug-btn')?.addEventListener('click', () => window.showToast("Search field activated"));
-    main.querySelector('#copy-report-btn')?.addEventListener('click', () => window.showToast("Report copied to clipboard!"));
-    main.querySelector('#export-pdf-btn')?.addEventListener('click', () => window.showToast("Generating PDF... Download will start shortly."));
-    main.querySelector('#alert-doctor-btn')?.addEventListener('click', () => window.showToast("High Alert sent to Dr. Roberts!", true));
-    main.querySelector('#make-simpler-btn')?.addEventListener('click', () => window.showToast("Simplifying medical jargon..."));
+    initDrugInteraction();
   }
 
   if (page === 'report') {

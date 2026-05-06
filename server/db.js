@@ -9,7 +9,7 @@ mongoose.connect(MONGODB_URI)
 // --- User Schema ---
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, sparse: true }, // Added for persistent Google login
+  email: { type: String, sparse: true, unique: true }, // Unique index ensures same Google email always maps to same user
   role: { type: String, enum: ['patient', 'caregiver', 'pharmacist', 'doctor'], default: 'patient' },
   passkey: { type: String, required: true },
   healthId: { type: String, unique: true },
